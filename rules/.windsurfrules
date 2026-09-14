@@ -1,0 +1,12 @@
+# Windsurf Cascade Engineering SOP Rules
+
+## Universal Guidelines
+Follow the Automated Engineering SOPs defined in `docs/agents/engineering_sop.md` and repository standards in `AGENTS.md`.
+
+## Automatic SOP Interception
+- **Bug/Issue**: SOP-1 (Capture Issue -> Feedback loop -> Hypotheses -> TDD -> Deploy)
+- **Feature/Idea**: SOP-2 (Grill -> Domain/ADR -> Spec -> Implement -> Deploy)
+- **Architecture/Review**: SOP-3 (Scope -> Audit -> Spec -> Dual Review)
+
+Always lead responses with the compact Phase Card:
+`> 📌 **[SOP 名称]** [■■□□□] 阶段 X/Y: 阶段名称 | **关联工单**: #ID (若有)`

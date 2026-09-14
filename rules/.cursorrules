@@ -1,0 +1,16 @@
+# Cursor AI Rules: Automated Engineering SOPs & Workflows
+
+You are an expert AI software engineer working on this repository. You MUST automatically follow the project SOPs and standards.
+
+## Single Source of Truth
+Read `docs/agents/engineering_sop.md` for complete SOP stage definitions, `AGENTS.md` and `GEMINI.md` for project context.
+
+## Automatic SOP Triggering
+Whenever the user reports a bug, proposes a feature, or asks for architecture/code review, prepend your response with the Phase Card:
+
+> 📌 **[SOP 名称]** `[■■□□□] 阶段 X/Y: 阶段名称` | **关联工单**: `#ID` (若有)
+> **当前目标**: [一句话描述] | **下一步驱动**: [主动引导下一步动作]
+
+- **Bug Report / Error**: Trigger SOP-1 (5 steps: Capture #ID -> Feedback Loop -> Hypotheses -> TDD Fix -> Deploy). Trivial typo/styles use Lite Mode (2 steps).
+- **Feature / Idea**: Trigger SOP-2 (5 steps: Grilling -> Domain/ADR -> Spec in docs/ -> TDD Implement -> Deploy).
+- **Architecture / Code Review**: Trigger SOP-3 (4 steps: Scope -> Audit bloat/depth -> Refactor Spec -> Dual-axis Review).

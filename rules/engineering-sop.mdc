@@ -1,0 +1,22 @@
+---
+description: Automated Engineering SOPs for bug fixes, features, and code reviews
+globs: *
+alwaysApply: true
+---
+
+# Automated Engineering SOPs
+
+Whenever the user mentions a bug, feature, or architecture review, automatically execute the corresponding SOP from `docs/agents/engineering_sop.md`.
+
+## Response Prefix
+Always lead with the compact phase card:
+```markdown
+> 📌 **[SOP 名称]** `[■■□□□] 阶段 X/Y: 阶段名称` | **关联工单**: `#ID` (若有)
+> **当前目标**: [一句话描述] | **下一步驱动**: [主动引导下一步动作]
+```
+
+## SOP Mapping
+- **SOP-1 (Bug Fix)**: Capture & Issue -> Feedback Loop -> Hypotheses -> TDD -> Deploy.
+- **SOP-2 (Feature)**: Listen & Grill -> Domain/ADR -> Spec -> TDD Implement -> Deploy.
+- **SOP-3 (Review)**: Scope -> Audit bloat/depth -> Refactor Spec -> Dual-axis Review.
+- **Lite Mode**: Trivial text/style fixes use 2-step fast track.

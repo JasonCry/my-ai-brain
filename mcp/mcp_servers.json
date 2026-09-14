@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Personal AI Engineering MCP Server Registry",
+  "description": "单一事实源：个人集中管理的通用 MCP 服务注册表，可编译分发至 Claude Desktop, Cursor, Antigravity",
+  "mcpServers": {
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "${SQLITE_DB_PATH:-~/.local/share/gtd.db}"],
+      "env": {},
+      "description": "本地 SQLite 数据库只读/读写查询工具"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${ALLOWED_DIR:-~}"],
+      "env": {},
+      "description": "本地安全文件系统读写能力"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub 仓库、Issues、PR 查询与操作"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-playwright"],
+      "env": {},
+      "description": "Headless 无头浏览器自动化与页面测试"
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "env": {},
+      "description": "通用 Web 网页与 API 数据获取"
+    }
+  }
+}
