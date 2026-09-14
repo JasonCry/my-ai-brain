@@ -25,8 +25,24 @@ cp "${BRAIN_ROOT}/sop/engineering_sop.md" "${TARGET_DIR}/docs/agents/"
 
 # 3. 注入多 AI 入口规则
 echo "   ➔ 注入多 AI 统一规则入口 (AGENTS, Claude, Cursor, Windsurf, Copilot)..."
-cp "${BRAIN_ROOT}/rules/AGENTS.md" "${TARGET_DIR}/"
-cp "${BRAIN_ROOT}/rules/CLAUDE.md" "${TARGET_DIR}/"
+if [ ! -f "${TARGET_DIR}/AGENTS.md" ]; then
+  cp "${BRAIN_ROOT}/rules/AGENTS.md" "${TARGET_DIR}/"
+else
+  if ! grep -q "## Agent skills" "${TARGET_DIR}/AGENTS.md"; then
+    echo "" >> "${TARGET_DIR}/AGENTS.md"
+    cat "${BRAIN_ROOT}/rules/AGENTS.md" >> "${TARGET_DIR}/AGENTS.md"
+  fi
+fi
+
+if [ ! -f "${TARGET_DIR}/CLAUDE.md" ]; then
+  cp "${BRAIN_ROOT}/rules/CLAUDE.md" "${TARGET_DIR}/"
+else
+  if ! grep -q "Automated SOP" "${TARGET_DIR}/CLAUDE.md"; then
+    echo "" >> "${TARGET_DIR}/CLAUDE.md"
+    cat "${BRAIN_ROOT}/rules/CLAUDE.md" >> "${TARGET_DIR}/CLAUDE.md"
+  fi
+fi
+
 cp "${BRAIN_ROOT}/rules/.cursorrules" "${TARGET_DIR}/"
 cp "${BRAIN_ROOT}/rules/engineering-sop.mdc" "${TARGET_DIR}/.cursor/rules/"
 cp "${BRAIN_ROOT}/rules/.windsurfrules" "${TARGET_DIR}/"
