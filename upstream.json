@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "my-ai-brain Third-Party Upstream Registry",
+  "description": "登记第三方优秀开源 Skills 上游源，支持一键自动检测并拉取最新版本",
+  "upstreams": [
+    {
+      "name": "mattpocock-skills",
+      "author": "Matt Pocock",
+      "description": "Matt Pocock 软件工程全套核心技能库 (diagnosing-bugs, grill-me, tdd, triage 等)",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "source_dir": "skills",
+      "target_dir": "skills"
+    }
+  ]
+}
