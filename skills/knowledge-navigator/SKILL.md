@@ -24,9 +24,10 @@ description: Progressive knowledge retrieval and context loading navigator based
 为确保在**任何工程、任何子目录或新建项目**中均能无缝调阅知识资产，司书侍读统一采用以下绝对寻址拓扑：
 
 1. **🏛️ 中央知识总馆 (Global Central Hub - 必须优先调阅)**：
-   - **索书总目录 (L0 OPAC)**：`/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`
-   - **文渊阁提要卡 (L1 Cards)**：`/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/docs/CARDS_TIYAO/`
-   - **CBB 通用组件库 (CBB Assets)**：`/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/cbb/`
+   - **索书总目录 (L0 OPAC)**：`/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`
+   - **文渊阁提要卡 (L1 Cards)**：`/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/CARDS_TIYAO/`
+   - **CBB 通用组件库 (CBB Assets)**：`/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/cbb/`
+   - **远程共享主库 (GitHub)**：`https://github.com/JasonCry/SoftwareDevKnowledgeBase`
 2. **📂 工程本地分馆 (Local Project Repo - 增量融合)**：
    - 若当前工程根目录下存在 `docs/00_OPAC_CATALOG.json`，则与中央总馆目录合并检索。
 
@@ -39,7 +40,7 @@ flowchart TD
     UserPrompt["👨‍💻 用户提出开发/修改需求<br/>(或准备修改特定文件)"]
     
     subgraph Step1 ["1️⃣ 阶段一：观题知意 (中央总馆 OPAC 嗅探)"]
-        OPAC["读取 /Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json<br/>匹配关键词 triggers / 文件模式 file_patterns / CBB 组件"]
+        OPAC["读取 /Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json<br/>匹配关键词 triggers / 文件模式 file_patterns / CBB 组件"]
     end
     
     subgraph Step2 ["2️⃣ 阶段二：进呈提要与戒律 (L1 注入 & CBB 复用)"]
@@ -66,14 +67,14 @@ flowchart TD
 
 ### 步骤 1：意图与文件嗅探 (Sense Intent)
 在开始编写代码、设计方案或修改已有文件前：
-1. **调阅中央总目录**：使用 `view_file` 读取 `/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`；
+1. **调阅中央总目录**：使用 `view_file` 读取 `/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`；
 2. **对比命中项**：将用户 Prompt 关键词与涉及的文件路径匹配 `triggers`、`file_patterns` 及 `cbb/` 目录；
 3. **严禁盲目放弃**：**绝不能因为当前工作区（如 WuDangShuYuan）本地没有 docs 目录就放弃调阅**，中央总馆永远在线！
 
 ### 步骤 2：提取 L1 文渊阁提要卡与 CBB 契约 (Load L1 Card & CBB)
 若命中索书号或通用业务能力（如登录鉴权、微信扫码、数据库高并发、临摹画板等）：
 - 使用 `view_file` **仅读取对应的 `.card.md` 文件**（约 15~20 行）；
-- 若命中 CBB 资产，优先调阅 `/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/cbb/<tech>/<name>/README.md` 中的接口契约；
+- 若命中 CBB 资产，优先调阅 `/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/cbb/<tech>/<name>/README.md` 中的接口契约；
 - 牢记其中的 **⛔ 戒律红线 (Taboos / Anti-Patterns)** 与 **💡 决策矩阵**。
 
 ### 步骤 3：知止不殆，按需借阅 (On-Demand L2)

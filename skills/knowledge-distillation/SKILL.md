@@ -48,20 +48,25 @@ sequenceDiagram
     Skill->>L1: 2. 炼字提要 (提炼 <200 字 L1 卡片，含 10 行决策矩阵)
     Skill->>L1: 3. 编定戒律 (提炼 Anti-Patterns / DO NOT 红线禁令)
     Skill->>L0: 4. 配发索书号，将关键词/文件模式/戒律登记入 00_OPAC_CATALOG.json
-    Skill-->>Dev: 5. 汇报配发索书号、提要卡与入库清单
+    Skill->>Dev: 5. 提交并推送至 GitHub (SoftwareDevKnowledgeBase 跨环境共享)
+    Skill-->>Dev: 6. 汇报配发索书号、提要卡与入库清单
 ```
 
 ### 1. 撰写 L2 详卷宝典或 CBB 模块
-- 全局中央知识库路径：`/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/`。
+- 全局中央知识库路径：`/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/`（或 `$HOME/Projects/SoftwareDevKnowledgeBase`）。
 - 架构宝典入 `01-Architecture-And-Design/`，安全入 `05-Security-And-Compliance/`，CBB 入 `cbb/<stack>/<name>/`。
 - 必须包含真实生产环境现场日志、Mermaid 拓扑图与根因分析。
 
-### 2. 提炼 L1 文渊阁提要卡 (`/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/docs/CARDS_TIYAO/<CALL_NUM>.card.md`)
+### 2. 提炼 L1 文渊阁提要卡 (`/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/CARDS_TIYAO/<CALL_NUM>.card.md`)
 - 严格控制在 **200 字 / 200 tokens 以内**。
 - 包含：**10 行决策矩阵 / 3 步极速配置** + **⛔ 戒律红线 (Vinaya / Anti-Patterns)**。
 
-### 3. 登记 L0 OPAC 索书总馆 (`/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`)
+### 3. 登记 L0 OPAC 索书总馆 (`/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`)
 - 将索书号、部类、标题、触发关键词（`triggers`）、关联文件模式（`file_patterns`）、提要卡路径（`card_path`）与戒律清单（`taboos`）追加到 JSON 索引中。
+
+### 4. 提交并同步至 GitHub 远程共享
+- 完成入库与索书目录登记后，调用 `/kb-push`（或在 `SoftwareDevKnowledgeBase` 执行 `git add . && git commit -m "..." && git push origin main`）。
+- 确保最新沉淀的 CBB 与架构/排障经验实时推送到 `https://github.com/JasonCry/SoftwareDevKnowledgeBase`，让所有开发环境无缝共享。
 
 ---
 

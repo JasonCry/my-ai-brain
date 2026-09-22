@@ -62,13 +62,39 @@ case "${1:-help}" in
     (cd "${BRAIN_PATH}" && git pull origin main) && bash "${BRAIN_PATH}/bin/install-global.sh"
     echo "✨ 同步完成！当前所有 AI 工具已具备最新工程能力。"
     ;;
+  kb-sync|kb-pull)
+    KB_PATH="${HOME}/Projects/SoftwareDevKnowledgeBase"
+    if [ ! -d "${KB_PATH}" ]; then
+      echo "📥 [KnowledgeBase] 正在克隆中央知识库..."
+      git clone https://github.com/JasonCry/SoftwareDevKnowledgeBase.git "${KB_PATH}"
+    else
+      echo "🔄 [KnowledgeBase] 正在从 GitHub 同步最新知识与 CBB..."
+      (cd "${KB_PATH}" && git pull origin main)
+    fi
+    echo "✨ 知识库同步完成！"
+    ;;
+  kb-push)
+    KB_PATH="${HOME}/Projects/SoftwareDevKnowledgeBase"
+    MSG="${2:-feat: update knowledge base docs and cbb assets}"
+    echo "🚀 [KnowledgeBase] 正在提交并推送到 GitHub 远程仓库..."
+    (cd "${KB_PATH}" && git add . && git commit -m "${MSG}" && git push origin main)
+    echo "✨ 知识库推送完成！所有开发环境现已共享最新资产。"
+    ;;
+  kb-status)
+    KB_PATH="${HOME}/Projects/SoftwareDevKnowledgeBase"
+    echo "📊 [KnowledgeBase] 当前知识库资产状态:"
+    (cd "${KB_PATH}" && git status)
+    ;;
   *)
-    echo "Usage: ai-brain [init|sync|status|push|update]"
+    echo "Usage: ai-brain [init|sync|status|push|update|kb-sync|kb-push|kb-status]"
     echo "  init [dir]   - 为当前或指定项目注入全套 AI SOP 与规则"
     echo "  sync         - 刷新本地 skills 软链到本机各 AI 工具"
     echo "  status       - 查看本地 my-ai-brain 资产库改动状态"
     echo "  push [msg]   - 一键将本地新技能与修改推送到 GitHub 仓库"
     echo "  update       - 从 GitHub 拉取最新资产并自动刷新全局能力"
+    echo "  kb-sync      - 从 GitHub 同步 SoftwareDevKnowledgeBase 最新知识与 CBB"
+    echo "  kb-push [msg]- 一键将本地沉淀的新知识与 CBB 推送至 GitHub 共享"
+    echo "  kb-status    - 查看中央知识库 Git 改动状态"
     ;;
 esac
 CLI_EOF

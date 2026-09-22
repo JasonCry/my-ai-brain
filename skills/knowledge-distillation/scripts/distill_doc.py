@@ -6,7 +6,7 @@ distill_doc.py - Helper script to validate, create, or index documents in Softwa
 import os
 import sys
 
-KB_ROOT = "/Users/jasonshawn/Projects/SoftwareDevKnowledgeBase"
+KB_ROOT = os.environ.get("SOFTWARE_DEV_KB_ROOT", os.path.expanduser("~/Projects/SoftwareDevKnowledgeBase"))
 
 CATEGORIES = {
     "1": ("01-Architecture-And-Design", "系统架构与设计"),

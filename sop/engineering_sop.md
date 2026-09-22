@@ -86,7 +86,7 @@
 ### 阶段 2/5: 领域建模与 ADR 决策 (Domain Modeling & ADR)
 * **卡片标识**：`[■■□□□] 阶段 2/5: 领域建模与架构决策`
 * **执行动作**（参考 `/domain-modeling`）：
-  - 检查是否引入了新概念：更新根目录 [CONTEXT.md](file:///Users/jasonshawn/Projects/P12_Personal_Work_Assistant/CONTEXT.md)，防止术语混淆。
+  - 检查是否引入了新概念：更新根目录 `CONTEXT.md`，防止术语混淆。
   - 若涉及系统级重大设计选择，在 `docs/adr/` 下生成一条 ADR 记录。
 
 ### 阶段 3/5: 方案设计与任务拆解 (Spec & Tickets)
@@ -123,7 +123,7 @@
 * **执行动作**（参考 `/ponytail-audit` 与 `/codebase-design`）：
   - 扫描无用依赖、过度抽象与冗余样板代码（生成减法建议清单）。
   - 评估核心模块接口深度（是否向外暴露了过多内部实现细节）。
-  - 对照 [CONTEXT.md](file:///Users/jasonshawn/Projects/P12_Personal_Work_Assistant/CONTEXT.md) 与 ADR 检查概念一致性。
+  - 对照根目录 `CONTEXT.md` 与 ADR 检查概念一致性。
 
 ### 阶段 3/4: 产出重构方案 Spec (Solution Spec)
 * **卡片标识**：`[■■■□] 阶段 3/4: 产出重构方案 Spec`
