@@ -65,17 +65,22 @@ flowchart TD
 
 ## 📋 司书侍读作业标准流 (SOP)
 
-### 步骤 1：意图与文件嗅探 (Sense Intent)
-在开始编写代码、设计方案或修改已有文件前：
-1. **调阅中央总目录**：使用 `view_file` 读取 `/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/00_OPAC_CATALOG.json`；
-2. **对比命中项**：将用户 Prompt 关键词与涉及的文件路径匹配 `triggers`、`file_patterns` 及 `cbb/` 目录；
-3. **严禁盲目放弃**：**绝不能因为当前工作区（如 WuDangShuYuan）本地没有 docs 目录就放弃调阅**，中央总馆永远在线！
+### 步骤 1：零 Token / 低 Token 意图与文件嗅探 (Sense Intent)
+在开始编写代码、设计方案或修改已有文件前，优先使用**零 Token 嗅探脚本**，拒绝直接加载万字 OPAC 大表：
+1. **优先方案（零 Token 命令行嗅探）**：
+   运行命令：
+   ```bash
+   /Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/bin/kb-sniff "<需求描述或报错关键字>" -f <涉及的文件名>
+   ```
+   脚本在 10 毫秒内自动计算关键词和文件权重，**直接输出命中的索书号、提要卡绝对路径与核心戒律红线**，LLM 消耗 Tokens = 0！
+2. **备选方案（轻量索引读取）**：
+   若无法执行命令行，仅读取精简版快速索引 `/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/docs/00_INDEX_FAST.json`（相比完整版节省 60%~70% Tokens），严禁无故读取完整的 `00_OPAC_CATALOG.json`。
 
 ### 步骤 2：提取 L1 文渊阁提要卡与 CBB 契约 (Load L1 Card & CBB)
-若命中索书号或通用业务能力（如登录鉴权、微信扫码、数据库高并发、临摹画板等）：
-- 使用 `view_file` **仅读取对应的 `.card.md` 文件**（约 15~20 行）；
-- 若命中 CBB 资产，优先调阅 `/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/cbb/<tech>/<name>/README.md` 中的接口契约；
-- 牢记其中的 **⛔ 戒律红线 (Taboos / Anti-Patterns)** 与 **💡 决策矩阵**。
+若步骤 1 嗅探命中索书号或通用业务能力：
+- 使用 `view_file` **仅读取对应的 `.card.md` 文件**（约 15~20 行，<200 Tokens）；
+- 若命中 CBB 资产，调阅 `/Users/jasonxiao/Projects/SoftwareDevKnowledgeBase/cbb/<tech>/<name>/README.md` 中的接口契约；
+- 牢记其中的 **⛔ 戒律红线 (Taboos / Anti-Patterns)** 与 **💡 决策矩阵**，直接进入编码阶段。
 
 ### 步骤 3：知止不殆，按需借阅 (On-Demand L2)
 - **90% 场景**：仅凭 L1 提要卡中的铁律与 CBB 契约即可保证 100% 避坑并顺利交付。
