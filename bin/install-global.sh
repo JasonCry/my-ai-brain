@@ -10,29 +10,38 @@ BRAIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "🧠 [my-ai-brain] 正在配置本机全局 AI 工程环境..."
 
-# 1. 配置 Antigravity 全局 Skills (采用软链接，保证 git pull 后实时自动生效)
-GEMINI_CONFIG_DIR="${HOME}/.gemini/config"
-GEMINI_SKILLS_DIR="${GEMINI_CONFIG_DIR}/skills"
-mkdir -p "${GEMINI_SKILLS_DIR}"
+# 1. 配置所有 AI 工具的全局 Skills 软链 (Antigravity, Claude, Codex, Universal Agents)
+TARGET_SKILL_DIRS=(
+  "${HOME}/.gemini/config/skills"
+  "${HOME}/.claude/skills"
+  "${HOME}/.codex/skills"
+  "${HOME}/.agents/skills"
+)
 
-echo "   ➔ 软链挂载 Skills 到 Antigravity (${GEMINI_SKILLS_DIR})..."
-for skill in "${BRAIN_ROOT}/skills"/*; do
-  if [ -d "${skill}" ]; then
-    skill_name="$(basename "${skill}")"
-    target="${GEMINI_SKILLS_DIR}/${skill_name}"
-    
-    # 若目标已是正确的软链接，跳过
-    if [ -L "${target}" ] && [ "$(readlink "${target}")" = "${skill}" ]; then
-      continue
+for target_dir in "${TARGET_SKILL_DIRS[@]}"; do
+  mkdir -p "${target_dir}"
+  tool_label="$(basename "$(dirname "${target_dir}")")/$(basename "${target_dir}")"
+  echo "   ➔ 软链挂载 Skills 到 ${tool_label} (${target_dir})..."
+  for skill in "${BRAIN_ROOT}/skills"/*; do
+    if [ -d "${skill}" ]; then
+      skill_name="$(basename "${skill}")"
+      target="${target_dir}/${skill_name}"
+      
+      # 若目标已是正确的软链接，跳过
+      if [ -L "${target}" ] && [ "$(readlink "${target}")" = "${skill}" ]; then
+        continue
+      fi
+      
+      # 若存在且不是正确软链接（如旧物理文件夹），安全替换
+      rm -rf "${target}"
+      ln -s "${skill}" "${target}"
     fi
-    
-    # 若存在且不是正确软链接（如旧物理文件夹），安全替换
-    rm -rf "${target}"
-    ln -s "${skill}" "${target}"
-  fi
+  done
 done
 
 # 2. 写入 Antigravity skills.json 声明式配置（双重保障机制）
+GEMINI_CONFIG_DIR="${HOME}/.gemini/config"
+mkdir -p "${GEMINI_CONFIG_DIR}"
 cat << JSON_EOF > "${GEMINI_CONFIG_DIR}/skills.json"
 {
   "entries": [
@@ -44,9 +53,12 @@ cat << JSON_EOF > "${GEMINI_CONFIG_DIR}/skills.json"
 JSON_EOF
 echo "   ➔ 写入 Antigravity skills.json 声明配置..."
 
-# 3. 配置 Claude Code 全局目录（若支持）
-CLAUDE_DIR="${HOME}/.claude"
-mkdir -p "${CLAUDE_DIR}"
+# 3. 配置 Codex 全局规则 (AGENTS.md)
+if [ -f "${BRAIN_ROOT}/rules/AGENTS.md" ]; then
+  mkdir -p "${HOME}/.codex"
+  cp "${BRAIN_ROOT}/rules/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+  echo "   ➔ 同步全局 AGENTS.md 到 Codex (~/.codex/AGENTS.md)..."
+fi
 
 # 4. 创建全局命令行别名 `ai-brain` 方便日常使用
 BIN_DIR="${HOME}/.local/bin"
