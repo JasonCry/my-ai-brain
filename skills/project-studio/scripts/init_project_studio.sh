@@ -6,8 +6,10 @@
 # ==============================================================================
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_NUM=1
 OWNER="JasonCry"
+
 
 echo "=============================================================================="
 echo "🚀 [Project Studio] 正在初始化多项目统一工作台治理环境..."
@@ -243,6 +245,9 @@ RULES_CONTENT="
 4. **提交追溯门禁**：所有 Git Commit 必须携带 \`#<Issue_ID>\`。
 5. **端口与环境隔离**：开发与部署严格遵从 \`docs/PORT_REGISTRY.md\`，禁止任意占用其他项目端口。
 6. **Index-First 索引先行**：排查 Bug 或开发新功能前，严禁全仓盲目 Grep，必须先阅读 \`llms.txt\` 或调用 \`./scripts/code_query.sh trace <route>\` 锁定接缝。
+7. **研发与发版彻底解耦铁律 (Dev-Release Decoupling)**：
+   - **日常开发态 (Dev & Staging)**：修改 Bug、做小需求、日常开发仅做普通 Git Commit，**严禁修改 \`pubspec.yaml\` 自增版本号，严禁创建 Git Tag，严禁推 Tag**。\`git push\` 仅推送常规代码，严禁误触发 GitHub Actions 云端构建流水线。
+   - **正式发版态 (Production Release)**：**仅且仅当用户明确要求发版**（例如：“准备发版”、“发布新版本”、“上线生产”）时，才允许调用 \`./scripts/publish_release.sh\` 执行递增版本号、打 Tag 并推送触发云端打包。
 "
 
 for file in "AGENTS.md" "GEMINI.md"; do
