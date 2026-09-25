@@ -203,8 +203,36 @@ EOF
 chmod +x scripts/notify_voc_reporters.sh
 echo "   ✅ scripts/notify_voc_reporters.sh 已就绪"
 
-# 6. 向 AGENTS.md / GEMINI.md / CLAUDE.md 三端注入刚性规约
-echo "🛡️ [6/6] 注入跨机工作台协同铁律至全端 AI 指令 (AGENTS.md / GEMINI.md)..."
+# 6. 注入代码图谱与接缝查询探针 (code_query.sh & auto_sync_code_index.sh)
+echo "⚡ [6/7] 注入代码接缝探针工具与 Git 自动随动钩子..."
+cp "$SCRIPT_DIR/code_query.sh" scripts/code_query.sh 2>/dev/null || true
+cp "$SCRIPT_DIR/auto_sync_code_index.sh" scripts/auto_sync_code_index.sh 2>/dev/null || true
+chmod +x scripts/code_query.sh scripts/auto_sync_code_index.sh 2>/dev/null || true
+
+# 初次生成接缝图谱
+if [ -x "scripts/auto_sync_code_index.sh" ]; then
+    bash scripts/auto_sync_code_index.sh || true
+fi
+
+# 挂载 Git Pre-commit 随动更新钩子
+if [ -d ".git/hooks" ]; then
+    HOOK_FILE=".git/hooks/pre-commit"
+    if [ ! -f "$HOOK_FILE" ] || ! grep -q "auto_sync_code_index.sh" "$HOOK_FILE"; then
+        cat << 'HOOK' >> "$HOOK_FILE"
+
+# [Project Studio] 提交时自动增量刷新代码接缝图谱
+if [ -x "scripts/auto_sync_code_index.sh" ]; then
+    bash scripts/auto_sync_code_index.sh >/dev/null 2>&1 || true
+    git add docs/ARCHITECTURE_SEAMS.json 2>/dev/null || true
+fi
+HOOK
+        chmod +x "$HOOK_FILE"
+        echo "   ✅ 已挂载 Git Pre-commit 自动随动刷新钩子"
+    fi
+fi
+
+# 7. 向 AGENTS.md / GEMINI.md 三端注入刚性规约 (含 Index-First 铁律)
+echo "🛡️ [7/7] 注入跨机工作台协同铁律至全端 AI 指令 (AGENTS.md / GEMINI.md)..."
 
 RULES_CONTENT="
 ## 🚀 Project Studio 跨机工作台协同铁律 (Mandatory)
@@ -214,6 +242,7 @@ RULES_CONTENT="
 3. **能力大地图同步**：每次发布新版本若包含新增业务特性，必须同步更新 \`docs/CAPABILITIES.md\` 并提供冒烟验证路径。
 4. **提交追溯门禁**：所有 Git Commit 必须携带 \`#<Issue_ID>\`。
 5. **端口与环境隔离**：开发与部署严格遵从 \`docs/PORT_REGISTRY.md\`，禁止任意占用其他项目端口。
+6. **Index-First 索引先行**：排查 Bug 或开发新功能前，严禁全仓盲目 Grep，必须先阅读 \`llms.txt\` 或调用 \`./scripts/code_query.sh trace <route>\` 锁定接缝。
 "
 
 for file in "AGENTS.md" "GEMINI.md"; do
