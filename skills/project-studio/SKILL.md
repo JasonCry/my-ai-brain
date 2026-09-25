@@ -34,6 +34,10 @@ description: >-
    - 所有工作台原则与门禁必须硬编码在项目仓库的 `AGENTS.md`、`GEMINI.md` 与 `CLAUDE.md` 中；
    - 保证在任何电脑（MacBook Air / Mac Mini / 任意新设备）上打开 IDE 时，AI 均自动遵循这套规约。
 
+5. **研发与发版彻底解耦铁律 (Dev-Release Decoupling)**：
+   - 日常改 Bug、做小需求仅做普通 Git Commit，**严禁修改版本号，严禁创建或推送 Git Tag**，`git push` 绝不触发云端打包；
+   - 只有当用户明确发出发版指令时，才调用 `./scripts/publish_release.sh` 提升版本号并推 Tag 触发云端打包。
+
 ---
 
 ## ⚡ 触发场景与意图匹配
@@ -95,3 +99,13 @@ description: >-
 - 当需要了解“软件开发到什么状态”、“有哪些功能”时：
 - 优先读取 `docs/CAPABILITIES.md`；
 - 比对最近 10 次 Git Commit 或 Release，如有新上线特性尚未落图，主动提示用户更新。
+
+---
+
+### 工作流 D：受控发版流水线 (Production Release)
+
+1. **触发准入**：仅当用户明确指示上线或发版时才执行；日常改 Bug / 做小需求严禁调用！
+2. **执行发布**：运行 `./scripts/publish_release.sh [patch|minor|major] -m "版本说明"`；
+3. **云端构建**：Tag 推送自动触发 GitHub Actions 编译 Web 与 macOS/Android 后端产物；
+4. **生产机热更**：在 Mac Mini 生产机执行 `./scripts/deploy_release.sh <tag>` 秒级更新；
+5. **客户闭环**：发版成功后自动调用 `./scripts/notify_voc_reporters.sh` 打印客户微信回访清单。

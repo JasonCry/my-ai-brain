@@ -24,10 +24,10 @@
 
 ---
 
-## 第一部分：Project Studio 六大立论基石
+## 第一部分：Project Studio 七大立论基石
 
 ```
-                           【Project Studio 六大支柱体系】
+                           【Project Studio 七大支柱体系】
                                          │
    ┌──────────────────┬──────────────────┼──────────────────┬──────────────────┐
    ▼                  ▼                  ▼                  ▼                  ▼
@@ -36,10 +36,11 @@ GitHub Projects    CAPABILITIES.md    VOC 权重与 24h SLA  单机多服务严�
 跨仓库多项目聚合   含100%冒烟路径     发版自动生成私信   杜绝本地踩踏碰撞   AI 1秒直达拒盲搜
    │                  │                  │                  │                  │
    └──────────────────┴──────────────────┼──────────────────┴──────────────────┘
-                                         ▼
-                             [6. 宿主注入与物理门禁]
-                             System Prompt 强注入 + Git Hook 自动随动
-                             代码替人守门 · 违规刚性拦截
+                      ┌──────────────────┴──────────────────┐
+                      ▼                                     ▼
+           [6. 宿主注入与物理门禁]               [7. 研发与发版彻底解耦]
+           System Prompt + Git Hook             日常仅Commit禁改版本禁推Tag
+           代码替人守门 · 违规刚性拦截           发版专属publish流水线触达
 ```
 
 ---
@@ -80,7 +81,18 @@ GitHub Projects    CAPABILITIES.md    VOC 权重与 24h SLA  单机多服务严�
 
 ### 基石六：宿主底层强注入与物理脚本门禁 (Deterministic Enforcement)
 - **System Prompt 锁死**：规则写入 `AGENTS.md` 与 `GEMINI.md`，由 IDE 底座在每次会话强制注入顶层；
-- **代码替 AI 守门**：把客户回访工具直接嵌入 `./scripts/deploy.sh` 脚本末尾，执行部署命令必定打印回访清单；Git Hook 刚性阻断无 Issue 编号的提交。
+- **代码替 AI 守门**：把客户回访工具直接嵌入部署流程末尾，必定打印回访清单；Git Hook 刚性阻断无 Issue 编号的提交。
+
+### 基石七：研发与发版彻底解耦飞轮 (Dev-Release Decoupling & Cloud-Native Gate)
+- **日常研发态 (Dev & Staging)**：
+  - 改 Bug、做小需求、日常优化仅做普通 Git Commit（必须携带 `#<Issue_ID>`）；
+  - **严禁擅自修改 `pubspec.yaml`、`Cargo.toml` 等版本源文件自增版本号**；
+  - **严禁创建 Git Tag，严禁推 Tag**；
+  - 本地验证一律限定在预发 Staging 端口（如 `:3020` 或 `:3010`），`git push` 零本地编译负担、零云端打包触发，确保云端资源零浪费。
+- **正式发版态 (Production Release)**：
+  - **单点发版授权**：仅当用户明确发出发版上线指令时，才调用专属发版脚本 `./scripts/publish_release.sh [patch|minor|major]`；
+  - 自动递增版本事实源、打上 Git Release Tag 并推送到 GitHub，触发 GitHub Actions 编译 Web 与后端制品；
+  - 生产机执行 `./scripts/deploy_release.sh` 秒级拉取热更上线，达成发版过程的绝对确定性与零环境漂移。
 
 ---
 
@@ -122,7 +134,8 @@ sequenceDiagram
     participant AI as AI Agent (IDE)
     participant GH as GitHub Project #1
     participant S as Staging (3020/3010)
-    participant P as 生产服务 (3000/3002)
+    participant GA as GitHub Actions (云端)
+    participant P as 生产机 Mac Mini (3000/3002)
 
     C->>D: 微信反馈想法/缺陷
     D->>AI: "记录一条客户反馈..."
@@ -131,8 +144,13 @@ sequenceDiagram
     D->>AI: 启动特性演进 / Bug 修复
     AI->>AI: 先查 llms.txt / 接缝表 (Index-First)
     AI->>S: 部署到本地预发验证 (localhost:3020)
-    D->>S: 验收通过
-    D->>P: 执行 ./scripts/deploy.sh 发布生产
+    D->>S: 验收通过 (普通 git commit + push，不改版本不打tag)
+    Note over D,AI: 日常持续迭代，版本号稳定不变
+    D->>AI: 明确发版指令: "准备发布新版本"
+    AI->>AI: 执行 ./scripts/publish_release.sh (版本晋级 + Tag 推送)
+    AI->>GA: 仅 Tag 推送触发云端构建
+    GA->>GA: Ubuntu Runner 编译 Web + 后端二进制
+    D->>P: 执行 ./scripts/deploy_release.sh 秒级热更
     P-->>D: 终端自动打印天使客户微信私信文案
     D->>C: 微信一键粘贴回访: "王总，您建议的功能已上线！"
 ```

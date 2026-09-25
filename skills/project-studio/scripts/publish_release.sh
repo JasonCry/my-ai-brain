@@ -9,7 +9,15 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PUBSPEC="${PROJECT_ROOT}/flutter_app/pubspec.yaml"
+PUBSPEC=""
+DART_VER_FILE=""
+if [ -f "${PROJECT_ROOT}/flutter_app/pubspec.yaml" ]; then
+  PUBSPEC="${PROJECT_ROOT}/flutter_app/pubspec.yaml"
+  DART_VER_FILE="${PROJECT_ROOT}/flutter_app/lib/config/app_version.dart"
+elif [ -f "${PROJECT_ROOT}/pubspec.yaml" ]; then
+  PUBSPEC="${PROJECT_ROOT}/pubspec.yaml"
+  DART_VER_FILE="${PROJECT_ROOT}/lib/config/app_version.dart"
+fi
 CARGO_TOML="${PROJECT_ROOT}/backend/Cargo.toml"
 
 DRY_RUN=false
@@ -118,12 +126,18 @@ fi
 # 3. 物理提升版本号并同步各端事实源 (JING-VER.01)
 echo "📦 [1/5] 更新版本事实源 (pubspec.yaml, Cargo.toml, app_version.dart)..."
 sed -i '' "s/^version: .*/version: ${NEW_VER}+${NEW_BUILD}/" "$PUBSPEC" 2>/dev/null || sed -i "s/^version: .*/version: ${NEW_VER}+${NEW_BUILD}/" "$PUBSPEC"
-sed -i '' "s/^version = \".*\"/version = \"${NEW_VER}\"/" "$CARGO_TOML" 2>/dev/null || sed -i "s/^version = \".*\"/version = \"${NEW_VER}\"/" "$CARGO_TOML"
-bash "${PROJECT_ROOT}/scripts/build_version_injector.sh" --sync-only
+if [ -f "$CARGO_TOML" ]; then
+  sed -i '' "s/^version = \".*\"/version = \"${NEW_VER}\"/" "$CARGO_TOML" 2>/dev/null || sed -i "s/^version = \".*\"/version = \"${NEW_VER}\"/" "$CARGO_TOML"
+fi
+if [ -f "${PROJECT_ROOT}/scripts/build_version_injector.sh" ]; then
+  bash "${PROJECT_ROOT}/scripts/build_version_injector.sh" --sync-only
+fi
 
 # 4. Git 提交版本变更
 echo "📝 [2/5] 提交版本变更至本地 Git..."
-git add "$PUBSPEC" "$CARGO_TOML" "${PROJECT_ROOT}/flutter_app/lib/config/app_version.dart"
+git add "$PUBSPEC"
+[ -f "$CARGO_TOML" ] && git add "$CARGO_TOML"
+[ -n "$DART_VER_FILE" ] && [ -f "$DART_VER_FILE" ] && git add "$DART_VER_FILE"
 if [ -f "${PROJECT_ROOT}/changelog.md" ]; then
   git add "${PROJECT_ROOT}/changelog.md"
 fi
