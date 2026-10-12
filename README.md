@@ -57,13 +57,12 @@ ai-brain init
 # 或者在任意路径指定目标目录：
 ai-brain init /path/to/your/new-project
 ```
-该项目就会立刻拥有：
-- `docs/agents/` 全套标准化 SOP 规范
-- `AGENTS.md` (通用 Agent 标准)
-- `CLAUDE.md` (Claude Code 自动执行 SOP 拦截)
-- `.cursorrules` & `.cursor/rules/` (Cursor 自动驱动阶段卡片)
-- `.windsurfrules` (Windsurf Cascade 规则)
-- `.github/copilot-instructions.md` (Copilot 规则)
+该项目就会立刻收敛为 **All-in `AGENTS.md` 单一正交入口模式**：
+- `AGENTS.md`（全 AI 工具原生自动识别的唯一项目规则入口，自动清理 `CLAUDE.md` / `.cursorrules` 等冗余影子文件，避免規則遮蔽与双重 Token 注入）
+- `docs/agents/`（全套标准化 SOP 规范与 `SPEC.template.md` 结构化契约模板）
+- `llms.txt` + `scripts/code_query.sh`（L0~L2 三层渐进式代码定位探针）
+- `scripts/verify_fast.sh`（秒级增量编译/静态分析左移门禁）
+- `.git/hooks/pre-commit` & `commit-msg`（研发/发版版本号物理隔离 + `#IssueID` 追溯门禁 + 架构接缝自动同步）
 
 ### 3. 如何推送到 GitHub 实现云端备份与跨机器同步？
 

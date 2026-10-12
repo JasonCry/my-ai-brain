@@ -22,28 +22,32 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 > **当前目标**: [一句话描述当前目标] | **下一步驱动**: [主动引导用户进入下一步动作]
 ```
 
-### SOP Routing Matrix & Mandatory Skill Auto-Loading (MUST read `SKILL.md` via `view_file` before coding):
-**严禁等待用户显式点名 Matt Pocock 技能！严禁只口头提及技能名而不读取 `SKILL.md`！** 凡进入以下场景，必须**自动调用 `view_file`** 加载对应技能并严格按其规范执行：
-- **SOP-1 (Bug 缺陷攻坚流 - 5步)**: 遇到 "bug", "报错", "异常", "问题", "不工作", "崩溃", "失败", "数据不对" 等。
-  - **强制自动加载技能**: `diagnosing-bugs` + `tdd` + `ponytail`。
-  - **动作**: 立刻输出 `[■□□□□] 阶段 1/5: 捕获与工单建立`，执行 `gh issue create`，记录在 `changelog.md`，按 `diagnosing-bugs` 先构建必红最小复现闭环（阶段 2）与可证伪假设（阶段 3），再按 `tdd` + `ponytail` 极简修复（阶段 4），阶段 5 仅部署 Staging 预发环境并输出 `[代码已改] -> [单测已过] -> [真实接口/Staging已测] -> [生产待授权]` 四维回执。
-- **Lite Mode (轻量极简通道 - 2步)**: 仅当为纯文本勘误、单一简单样式调整等极简修改时，自动降级为 2 步（`[■□] 阶段 1/2: 极简登记与确认` -> `[■■] 阶段 2/2: 修改与预发验证`），自动遵循 `ponytail`。
-- **SOP-2 (特性演进与日常编码流 - 5步)**: 遇到 "新需求", "新功能", "写代码", "实现", "增加", "想做", "支持", "优化交互" 等。
-  - **强制自动加载技能**:
-    - 需求/边界未清时：自动读取 `grill-with-docs`（协同 `grilling` + `domain-modeling`）盘问边界并维护 `CONTEXT.md` / ADR。
-    - 动手写代码/设计模块时：**无条件自动读取 `codebase-design`（深模块与接缝设计）+ `tdd`（垂直示踪弹切片）+ `ponytail`（极简反过度设计）**。
-    - 编码完成交付前：自动遵循 `code-review` 双轴（Standards + Spec）自检，并输出四维验收回执。
-- **SOP-3 (架构治理流 - 4步)**: 遇到 "架构", "重构", "code review", "走查", "代码膨胀" 等。
-  - **强制自动加载技能**: `codebase-design` + `ponytail-review` + `code-review`。
-  - **动作**: 立刻输出 `[■□□□] 阶段 1/4: 明确审计范围与焦点`，查冗余与深浅，写方案 Spec，并做双轴审查。
+### SOP Routing Matrix & L1/L2 Progressive Skill Discipline:
+采用 **L1 内联纪律（0 工具调用开销）+ L2 深度技能按需加载（`view_file` 读取 `SKILL.md`）** 双层机制，消除日常任务每轮固定读取多个 `SKILL.md` 的仪式税：
+- **L1 内联核心纪律（所有任务默认强制生效，无需重复调用 `view_file`）**：
+  - **`diagnosing-bugs` (L1)**：先构建必红最小复现闭环（单测/curl/探针）→ 提出可证伪假设并验证根因 → 严禁无复现盲改代码。
+  - **`tdd` (L1)**：在公共接缝（Seam）处按 `Red -> Green -> Refactor` 垂直示踪弹切片推进，禁止测试内部私有实现细节。
+  - **`ponytail` (L1)**：YAGNI 极简优先，优先用标准库/平台原生能力，拒绝单一实现的抽象层与防御性冗余代码。
+  - **`codebase-design` (L1)**：设计深模块（小接口隐藏复杂实现），严禁透传浅模块（Pass-through）。
+- **L2 深度技能按需加载（仅在跨模块架构设计、需求边界模糊或执行双轴审查时调用 `view_file` 读取对应 `SKILL.md`）**：
+  - **SOP-1 (Bug 缺陷攻坚流 - 5步)**: 遇到跨模块或根因不明的 "bug", "报错", "异常", "崩溃", "数据不对"。
+    - **动作**: 输出 `[■□□□□] 阶段 1/5: 捕获与工单建立` → `gh issue create` 并登记 `changelog.md` → 阶段 2 必红复现闭环 → 阶段 3 假设验证（复杂疑难时 `view_file` 读 `diagnosing-bugs`）→ 阶段 4 TDD 极简修复 → 阶段 5 先跑 `./scripts/verify_fast.sh` 再跑 `./scripts/deploy_staging.sh`，输出 `[代码已改] -> [单测已过] -> [真实接口/Staging已测] -> [生产待授权]` 四维回执。
+  - **Lite Mode (轻量极简通道 - 2步)**: 适用于**纯文案/样式微调、静态配置修正，或单文件内明确局部修复（不涉及跨前后端接缝 `UI->Route->Storage->Table` 及数据库 Schema 变更）**。
+    - **动作**: 自动降级为 2 步（`[■□] 阶段 1/2: 极简建单与定位` -> `[■■] 阶段 2/2: 最小修改与快速验证`），直接遵循 L1 `ponytail` 纪律修改并验证，免除多轮 `SKILL.md` 读取。
+  - **SOP-2 (特性演进与日常编码流 - 5步)**: 遇到跨模块 "新需求", "新功能", "实现", "支持" 等。
+    - **按需加载 L2 技能**: 需求未清时读取 `grill-with-docs`；设计新模块/新接口接缝时读取 `codebase-design`；交付前双轴自检读取 `code-review`。
+    - **动作**: 阶段 1 边界盘问 → 阶段 2 领域建模 (`CONTEXT.md`/ADR) → 阶段 3 基于 `docs/agents/SPEC.template.md` 编写结构化 Spec → 阶段 4 TDD 垂直切片实施 → 阶段 5 `verify_fast.sh` + Staging 验证与四维回执。
+  - **SOP-3 (架构治理流 - 4步)**: 遇到 "架构", "重构", "code review", "走查", "代码膨胀" 等。
+    - **按需加载 L2 技能**: 读取 `codebase-design` + `ponytail-review` + `code-review`。
+    - **动作**: 输出 `[■□□□] 阶段 1/4: 明确审计范围与焦点`，查冗余与深浅，写方案 Spec，并做双轴审查。
 
-## 🗺️ Index-First 三层渐进式代码定位协议 (Mandatory · 严禁盲目全局 Grep)
+## 🗺️ Index-First 三层渐进式代码定位与左移验证协议 (Mandatory · 严禁盲目全局 Grep)
 
-在排查 Bug 或开发新功能时，**严禁一上来就执行无范围的全局 `grep` 或整篇读取上千行的大文件**，必须严格执行以下 4 步渐进式披露协议：
+在排查 Bug 或开发新功能时，**严禁一上来就执行无范围的全局 `grep` 或整篇读取上千行的大文件**，必须严格执行以下渐进式协议：
 1. **Step 1 · 宏观锁域 (L0, ~300 Tokens)**：优先读取 `llms.txt` 或执行 `./scripts/code_query.sh feature <关键词>` 检索 `docs/CAPABILITIES.md`，锁定目标功能所属的前端视图与后端路由文件名。
 2. **Step 2 · 中观溯源 (L1, ~150 Tokens)**：调用 `./scripts/code_query.sh trace <API或模块名>`（检索 `docs/ARCHITECTURE_SEAMS.json`），一步获取 `UI -> Route -> Storage -> Table` 端到端文件接缝。
 3. **Step 3 · 微观定行 (L2, ~100 Tokens)**：针对目标文件执行 `./scripts/code_query.sh outline <文件路径>`（或 `./scripts/code_query.sh symbol <函数名/类名>`），毫秒级获取文件内函数签名与**精确起止行号 (`LStart-LEnd`)**。
-4. **Step 4 · 切片读写 (Minimal Context)**：直接调用 `view_file(StartLine, EndLine)` 按行号切片读取目标函数并修改，提交时由 `.git/hooks/pre-commit` 自动增量刷新接缝索引。
+4. **Step 4 · 切片读写与秒级左移验证 (Minimal Context & Shift-Left Gate)**：调用 `view_file(StartLine, EndLine)` 按行号切片读取并局部修改；在执行重型构建前，优先运行 `./scripts/verify_fast.sh` 秒级完成增量编译/类型检查，提交时由 `.git/hooks/pre-commit` 自动增量刷新接缝索引。
 
 ## 📄 异构文档零感知高保真精读门禁 (Zero-Prompt Docling Gate · Mandatory)
 

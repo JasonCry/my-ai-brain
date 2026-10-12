@@ -67,10 +67,10 @@
 
 ## ⚡ 轻量通道 (Lite Mode: 2-Step Fast Track)
 
-**判定标准**：纯文案勘误、显而易见的单个样式微调、单个静态常量修正等无业务状态风险的修改。
+**判定标准**：纯文案勘误、单个样式微调、静态配置修正，或**单文件内明确的局部逻辑修复（不涉及跨前后端接缝 `UI -> Route -> Storage -> Table` 契约修改、不涉及数据库 Schema 迁移）**。
 
-* **阶段 1/2 [■□]**：登记工单并确认改动点（快速告知用户）。
-* **阶段 2/2 [■■]**：执行最小修改，运行 `./scripts/deploy_staging.sh`（Staging 3020 验证，不改版本号、不触碰生产），提交 `#<Issue_ID>` 并关闭工单。
+* **阶段 1/2 [■□]**：登记工单并确认改动点（利用 L0~L2 切片定位，免除多轮 `SKILL.md` 读取开销）。
+* **阶段 2/2 [■■]**：遵循 L1 `ponytail` 纪律执行最小修改，先运行 `./scripts/verify_fast.sh` 秒级校验，再运行 `./scripts/deploy_staging.sh`（Staging 3020 快速内循环验证，不改版本号、不触碰生产），提交 `#<Issue_ID>` 并关闭工单。
 
 ---
 
@@ -93,7 +93,7 @@
 ### 阶段 3/5: 方案设计与任务拆解 (Spec & Tickets)
 * **卡片标识**：`[■■■□□] 阶段 3/5: 方案设计与任务拆解`
 * **执行动作**（参考 `/to-spec` 与 `/to-tickets`）：
-  - 在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（如 `docs/architecture/`、`docs/frontend/` 等，**严禁直接堆放在 `docs/` 根目录**）编写实施 Spec（含时序、接口、数据结构、存储设计）。
+  - 基于 `docs/agents/SPEC.template.md`（含 YAML Frontmatter：`issue_id`、`affected_seams`、`verify_commands`、`acceptance_criteria`），在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（如 `docs/architecture/`、`docs/frontend/` 等，**严禁直接堆放在 `docs/` 根目录**）编写实施 Spec。
   - 使用 `gh issue create` 将需求拆解为结构化子任务。
 
 ### 阶段 4/5: 测试驱动实施 (TDD & Implement)

@@ -23,9 +23,10 @@ rm -f "${TARGET_DIR}/CLAUDE.md" \
       "${TARGET_DIR}/.cursor/rules/engineering-sop.mdc"
 rmdir "${TARGET_DIR}/.cursor/rules" "${TARGET_DIR}/.cursor" 2>/dev/null || true
 
-# 2. 注入单一事实源 (SSOT) SOP 参考文档
-echo "   ➔ 写入 SOP 规范文档 (docs/agents/)..."
+# 2. 注入单一事实源 (SSOT) SOP 参考文档与结构化 Spec 契约模板
+echo "   ➔ 写入 SOP 规范文档与 Spec 模板 (docs/agents/)..."
 cp "${BRAIN_ROOT}/sop/engineering_sop.md" "${TARGET_DIR}/docs/agents/"
+[ -f "${BRAIN_ROOT}/templates/docs/SPEC.template.md" ] && cp "${BRAIN_ROOT}/templates/docs/SPEC.template.md" "${TARGET_DIR}/docs/agents/"
 [ -f "${BRAIN_ROOT}/sop/issue-tracker.md" ] && cp "${BRAIN_ROOT}/sop/issue-tracker.md" "${TARGET_DIR}/docs/agents/"
 [ -f "${BRAIN_ROOT}/sop/triage-labels.md" ] && cp "${BRAIN_ROOT}/sop/triage-labels.md" "${TARGET_DIR}/docs/agents/"
 [ -f "${BRAIN_ROOT}/sop/domain.md" ] && cp "${BRAIN_ROOT}/sop/domain.md" "${TARGET_DIR}/docs/agents/"
@@ -40,14 +41,16 @@ target_path = sys.argv[1]
 block = """<!-- my-ai-brain:begin -->
 ## 🧠 Project-Level AI Brain Index & References (Orthogonal to Global Rules)
 
-> 全局通用规则（沟通契约、SOP 1~3 阶段卡与技能强制自动加载、Docling 门禁）已由本机全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）统一注入，此处不再重复拷贝。
+> 全局通用规则（沟通契约、SOP 1~3 阶段卡与 L1/L2 渐进式技能纪律、Docling 门禁）已由本机全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）统一注入，此处不再重复拷贝。
 
-- **Index-First 三层代码定位探针（严禁全仓盲目 `grep`）**：
+- **Index-First 三层代码定位与左移快检（严禁全仓盲目 `grep`）**：
   1. **L0 宏观锁域**：读取 `llms.txt` 或执行 `./scripts/code_query.sh feature <关键词>`（检索 `docs/CAPABILITIES.md`）。
   2. **L1 中观溯源**：执行 `./scripts/code_query.sh trace <API或模块名>`（检索 `docs/ARCHITECTURE_SEAMS.json`）。
-  3. **L2 微观定行**：执行 `./scripts/code_query.sh outline <文件>` 或 `./scripts/code_query.sh symbol <符号>` 获取 `[LStart-LEnd]`，再用 `view_file` 按行切片读取。
+  3. **L2 微观定行**：执行 `./scripts/code_query.sh outline <文件>` 或 `./scripts/code_query.sh symbol <符号>` 获取 `[LStart-LEnd]`，再用 `view_file` 按行切片读写。
+  4. **Shift-Left 秒级快检**：在重型构建前优先运行 `./scripts/verify_fast.sh` 完成增量编译与静态检查。
 - **Repository Agent Docs**:
   - **Automated Engineering SOPs**: `docs/agents/engineering_sop.md`
+  - **Structured Spec Template**: `docs/agents/SPEC.template.md`
   - **Issue Tracker**: `docs/agents/issue-tracker.md` (GitHub Issues via `gh` CLI)
   - **Triage Labels**: `docs/agents/triage-labels.md`
   - **Domain Context & ADRs**: `CONTEXT.md` + `docs/adr/` (see `docs/agents/domain.md`)
@@ -74,12 +77,13 @@ with open(target_path, "w", encoding="utf-8") as f:
     f.write(updated)
 PY_EOF
 
-# 4. 注入三层渐进式代码导航探针与自动同步底座 (3-Tier Progressive Code Navigation)
-echo "   ➔ 注入三层代码导航探针 (scripts/code_query.sh & auto_sync_code_index.sh)..."
+# 4. 注入三层渐进式代码导航探针、秒级快检与自动同步底座
+echo "   ➔ 注入三层代码导航探针与秒级快检 (scripts/code_query.sh, verify_fast.sh, auto_sync_code_index.sh)..."
 mkdir -p "${TARGET_DIR}/scripts"
 cp "${BRAIN_ROOT}/templates/scripts/code_query.sh" "${TARGET_DIR}/scripts/code_query.sh"
 cp "${BRAIN_ROOT}/templates/scripts/auto_sync_code_index.sh" "${TARGET_DIR}/scripts/auto_sync_code_index.sh"
-chmod +x "${TARGET_DIR}/scripts/code_query.sh" "${TARGET_DIR}/scripts/auto_sync_code_index.sh"
+[ -f "${BRAIN_ROOT}/templates/scripts/verify_fast.sh" ] && cp "${BRAIN_ROOT}/templates/scripts/verify_fast.sh" "${TARGET_DIR}/scripts/verify_fast.sh"
+chmod +x "${TARGET_DIR}/scripts/code_query.sh" "${TARGET_DIR}/scripts/auto_sync_code_index.sh" "${TARGET_DIR}/scripts/verify_fast.sh" 2>/dev/null || true
 
 if [ ! -f "${TARGET_DIR}/docs/CAPABILITIES.md" ] && [ -f "${BRAIN_ROOT}/templates/docs/CAPABILITIES.template.md" ]; then
   cp "${BRAIN_ROOT}/templates/docs/CAPABILITIES.template.md" "${TARGET_DIR}/docs/CAPABILITIES.md"

@@ -79,10 +79,10 @@ description: >-
 
 ## ⚡ 轻量通道 (Lite Mode: 2-Step Fast Track)
 
-**判定标准**：纯文案勘误、显而易见的单个样式微调、单个静态常量修正等无业务状态风险的修改。
+**判定标准**：纯文案勘误、显而易见的单个样式微调、静态常量修正，或**单文件内明确局部修复（不涉及跨前后端接缝 `UI->Route->Storage->Table` 或数据库 Schema 变更）**。
 
-* **阶段 1/2 [■□]**：登记改动点并与用户确认。
-* **阶段 2/2 [■■]**：执行最小修改，运行 `./scripts/deploy_staging.sh`（预发验证，不改版本号、不触碰生产），完成闭环。
+* **阶段 1/2 [■□]**：登记改动点并快速定位（利用 L0~L2 切片，免除额外 `SKILL.md` 读取）。
+* **阶段 2/2 [■■]**：执行最小修改，先跑 `./scripts/verify_fast.sh` 秒级检查，再运行 `./scripts/deploy_staging.sh`（预发快速内循环验证，不改版本号、不触碰生产），完成闭环。
 
 ---
 
@@ -105,7 +105,7 @@ description: >-
 ### 阶段 3/5: 方案设计与任务拆解 (Spec & Tickets)
 * **卡片标识**：`[■■■□□] 阶段 3/5: 方案设计与任务拆解`
 * **执行动作**（协同 `/to-spec` 与 `/to-tickets`）：
-  - 在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（严禁直接堆放在 `docs/` 根目录）编写技术实施方案文档（数据结构、时序流、存储契约）。
+  - 基于 `docs/agents/SPEC.template.md` 契约模板，在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（严禁直接堆放在 `docs/` 根目录）编写技术实施方案文档（含 YAML 头部契约、数据结构、时序流、存储契约与可验证 Checklist）。
   - 将方案拆解为独立的示踪弹（Tracer-bullet）任务工单。
 
 ### 阶段 4/5: 测试驱动实施 (TDD & Implement)
