@@ -3,8 +3,9 @@ name: engineering-sop
 description: >-
   Automated Engineering Standard Operating Procedures (SOPs). Covers Bug Triage & Fix
   (SOP-1), Feature Evolution (SOP-2), Architecture Governance & Refactor (SOP-3), and
-  2-Step Lite Mode. Use whenever addressing bugs, developing new features, conducting
-  refactoring, code reviews, or when the user asks to follow engineering SOPs.
+  2-Step Lite Mode. TRIGGER AUTOMATICALLY whenever addressing bugs, developing new
+  features, writing code, conducting refactoring, code reviews, or when the user asks
+  to follow engineering SOPs.
 ---
 
 # 自动化工程标准作业程序 (Automated Engineering SOPs)
@@ -35,7 +36,7 @@ description: >-
 * **卡片标识**：`[■□□□□] 阶段 1/5: 捕获与工单建立`
 * **执行动作**：
   1. 梳理用户描述的症状、发生环境、复现概率。
-  2. 执行 `gh issue create --title "..." --body "..."`，自动打上 `needs-triage` 标签（若无 GitHub Issue tracker 则记录在本地 `todo.md` 或 `changelog.md`）。
+  2. 执行 `gh issue create --title "..." --body "..."`（若无 GitHub Issue tracker 则记录在本地 `todo.md` 或 `changelog.md`）。
   3. 在 `changelog.md` 对应版本下登记。
 * **驱动下一步**：向用户汇报生成的 Issue ID，自动推进进入阶段 2。
 
@@ -60,17 +61,17 @@ description: >-
   1. **Red**：将复现脚本沉淀为正式回归测试用例。
   2. **Green**：编写最少、最直接的修复代码（杜绝过度设计）。
   3. **Refactor**：全量清理临时调试代码，确保测试全绿。
-* **驱动下一步**：汇报修复改动，准备进行部署流水线。
+* **驱动下一步**：汇报修复改动，准备进行预发验证流水线。
 
-### 阶段 5/5: 验证部署与工单闭环 (Deploy & Close)
-* **卡片标识**：`[■■■■■] 阶段 5/5: 验证部署与工单闭环`
+### 阶段 5/5: 预发验证与工单闭环 (Staging Verify & Close)
+* **卡片标识**：`[■■■■■] 阶段 5/5: 预发验证与工单闭环`
 * **执行动作**：
-  1. **日常 Staging 验证**：部署到预发环境验证（如 `localhost:3020` 或测试端口），严禁触碰生产环境。
+  1. **日常 Staging 验证**：部署到预发环境验证（如 `./scripts/deploy_staging.sh` 在 `localhost:3020`），**未经用户明确指令严禁调用 `./scripts/deploy.sh` 触碰生产环境**。
   2. **研发提交与发版编译彻底解耦（铁律）**：
      - 日常修复与提交仅做普通 Git Commit（必须携带 `#<Issue_ID>`）；
      - **严禁修改 `pubspec.yaml` / `Cargo.toml` 自增版本号**；
      - **严禁创建或推送 Git Tag**，确保日常 `git push` 不误触发云端发布流水线。
-  3. 审计浏览器控制台/运行日志，确保 0 运行时错误。
+  3. **反伪闭环四维证据回执**：审计真实 HTTP/MCP 接口与浏览器控制台（确保 0 运行时错误），并显式输出四态：`[代码已改] -> [单测已过] -> [真实接口/Staging 3020已测] -> [生产待授权]`。
   4. 执行 `gh issue close <ID>` 关闭工单。
   5. **正式发版受控**：仅且仅当用户明确指示发版时，才调用 `./scripts/publish_release.sh` 提升版本并推 Tag 触发云端打包。
 
@@ -81,7 +82,7 @@ description: >-
 **判定标准**：纯文案勘误、显而易见的单个样式微调、单个静态常量修正等无业务状态风险的修改。
 
 * **阶段 1/2 [■□]**：登记改动点并与用户确认。
-* **阶段 2/2 [■■]**：执行最小修改，运行构建/验证，完成闭环。
+* **阶段 2/2 [■■]**：执行最小修改，运行 `./scripts/deploy_staging.sh`（预发验证，不改版本号、不触碰生产），完成闭环。
 
 ---
 
@@ -104,7 +105,7 @@ description: >-
 ### 阶段 3/5: 方案设计与任务拆解 (Spec & Tickets)
 * **卡片标识**：`[■■■□□] 阶段 3/5: 方案设计与任务拆解`
 * **执行动作**（协同 `/to-spec` 与 `/to-tickets`）：
-  - 编写技术实施方案文档（数据结构、时序流、存储契约）。
+  - 在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（严禁直接堆放在 `docs/` 根目录）编写技术实施方案文档（数据结构、时序流、存储契约）。
   - 将方案拆解为独立的示踪弹（Tracer-bullet）任务工单。
 
 ### 阶段 4/5: 测试驱动实施 (TDD & Implement)
@@ -116,10 +117,10 @@ description: >-
 ### 阶段 5/5: 走查部署与发布交付 (Review & Deliver)
 * **卡片标识**：`[■■■■■] 阶段 5/5: 走查部署与发布交付`
 * **执行动作**：
-  - 双轴代码审查（规范度 + 契约度）。
+  - 双轴代码审查（规范度 + 契约度，协同 `/code-review`）。
   - **研发提交与发版编译彻底解耦（铁律）**：
     - 日常提交严禁修改版本号，严禁创建或推送 Git Tag；
-    - 预发 Staging 部署验证通过后更新 `changelog.md` 并关闭相关工单；
+    - 预发 Staging (`./scripts/deploy_staging.sh`) 部署验证通过后更新 `changelog.md`，输出四维回执 `[代码已改] -> [单测已过] -> [真实接口/Staging 3020已测] -> [生产待授权]` 并关闭相关工单；
     - 仅且仅当用户明确指示发版时，才调用 `./scripts/publish_release.sh` 提升版本并推 Tag 触发云端打包。
 
 ---
@@ -134,7 +135,7 @@ description: >-
 
 ### 阶段 2/4: 重构方案与防劣化契约 (Refactor Spec)
 * **卡片标识**：`[■■□□] 阶段 2/4: 重构方案与防劣化契约`
-* 制定微提交重构方案（协同 `/request-refactor-plan`），建立防回归断言。
+* 制定微提交重构方案（协同 `/request-refactor-plan`），写入 `docs/architecture/<refactor_name>_solution.md` 并建立防回归断言。
 
 ### 阶段 3/4: 渐进式微小提交实施 (Step-by-step Refactor)
 * **卡片标识**：`[■■■□] 阶段 3/4: 渐进式微小提交实施`
@@ -142,4 +143,4 @@ description: >-
 
 ### 阶段 4/4: 架构双轴审查与合流 (Dual-Axis Review & Merge)
 * **卡片标识**：`[■■■■] 阶段 4/4: 架构双轴审查与合流`
-* 执行规范与契约双轴审查（协同 `/code-review`），验证架构深度与收益。
+* 执行规范与契约双轴审查（协同 `/code-review`），并在预发环境验证架构深度与收益。

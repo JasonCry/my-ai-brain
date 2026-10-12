@@ -26,7 +26,7 @@
 * **卡片标识**：`[■□□□□] 阶段 1/5: 捕获与工单建立`
 * **执行动作**：
   1. 梳理用户描述的症状、发生环境（Safari、Chrome、iOS 等）、复现概率。
-  2. 执行 `gh issue create --title "..." --body "..."`，自动打上 `needs-triage` 标签。
+  2. 执行 `gh issue create --title "..." --body "..."`（若仓库已配置分诊标签则附带 `--label "needs-triage"`）。
   3. 在 `changelog.md` 中对应版本下登记工单。
 * **驱动下一步**：向用户汇报生成的 Issue ID，并自动进入阶段 2。
 
@@ -53,14 +53,15 @@
   1. **Red**：将复现脚本沉淀为正式回归测试用例。
   2. **Green**：编写最少、最直接的修复代码（杜绝过度设计）。
   3. **Refactor**：全量清理 `[DEBUG-xxxx]` 探针代码，确保测试全绿。
-* **驱动下一步**：汇报修复改动，准备进行部署流水线。
+* **驱动下一步**：汇报修复改动，准备进行预发验证流水线。
 
-### 阶段 5/5: 验证部署与工单闭环 (Deploy & Close)
-* **卡片标识**：`[■■■■■] 阶段 5/5: 验证部署与工单闭环`
+### 阶段 5/5: 预发验证与工单闭环 (Staging Verify & Close)
+* **卡片标识**：`[■■■■■] 阶段 5/5: 预发验证与工单闭环`
 * **执行动作**：
-  1. 执行强制流水线：`./scripts/deploy.sh`（重新构建并重启服务）。
-  2. 针对 Safari/Web 平台执行控制台与交互审计（确保 0 运行时报错）。
-  3. Git Commit 附带 `#<Issue_ID>`，执行 `gh issue close <ID>` 关闭工单。
+  1. **Staging First 预发验证**：默认执行 `./scripts/deploy_staging.sh`（部署至 `localhost:3020/3021`），**未经用户明确指令严禁运行 `./scripts/deploy.sh` 触碰生产环境（3000/3001）**。
+  2. **研发与发版彻底解耦（铁律）**：日常提交仅做带 `#<Issue_ID>` 的普通 Commit，**严禁修改 `pubspec.yaml` / `Cargo.toml` 版本号，严禁打/推 Git Tag**（仅当用户明确要求正式发版时才调用 `./scripts/publish_release.sh`）。
+  3. **反伪闭环四维证据回执**：针对真实 HTTP/MCP 接口与 Safari/Web 控制台完成实测（0 运行时报错），并在结案回复中显式列出四态：`[代码已改] -> [单测已过] -> [真实接口/Staging 3020已测] -> [生产待授权]`，严禁将“单测通过”冒充为“端到端验收完成”。
+  4. Git Commit 附带 `#<Issue_ID>`，验证通过后执行 `gh issue close <ID>` 关闭工单。
 
 ---
 
@@ -69,7 +70,7 @@
 **判定标准**：纯文案勘误、显而易见的单个样式微调、单个静态常量修正等无业务状态风险的修改。
 
 * **阶段 1/2 [■□]**：登记工单并确认改动点（快速告知用户）。
-* **阶段 2/2 [■■]**：执行最小修改，运行 `./scripts/deploy.sh`，关闭工单。
+* **阶段 2/2 [■■]**：执行最小修改，运行 `./scripts/deploy_staging.sh`（Staging 3020 验证，不改版本号、不触碰生产），提交 `#<Issue_ID>` 并关闭工单。
 
 ---
 
@@ -92,20 +93,20 @@
 ### 阶段 3/5: 方案设计与任务拆解 (Spec & Tickets)
 * **卡片标识**：`[■■■□□] 阶段 3/5: 方案设计与任务拆解`
 * **执行动作**（参考 `/to-spec` 与 `/to-tickets`）：
-  - 在 `docs/<feature_name>_solution.md` 编写实施 Spec（含时序、接口、数据结构、存储设计）。
-  - 使用 `gh issue create` 将需求拆解为结构化子任务，打上 `ready-for-agent` 标签。
+  - 在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（如 `docs/architecture/`、`docs/frontend/` 等，**严禁直接堆放在 `docs/` 根目录**）编写实施 Spec（含时序、接口、数据结构、存储设计）。
+  - 使用 `gh issue create` 将需求拆解为结构化子任务。
 
 ### 阶段 4/5: 测试驱动实施 (TDD & Implement)
 * **卡片标识**：`[■■■■□] 阶段 4/5: 测试驱动实施`
 * **执行动作**（参考 `/implement-spec`）：
   - 按照 Spec 逐步实现前后端逻辑，为核心业务逻辑编写测试，保持高内聚低耦合。
 
-### 阶段 5/5: 验证部署与交付闭环 (Verification & Release)
-* **卡片标识**：`[■■■■■] 阶段 5/5: 验证部署与交付闭环`
+### 阶段 5/5: 预发验证与交付闭环 (Staging Verification & Release)
+* **卡片标识**：`[■■■■■] 阶段 5/5: 预发验证与交付闭环`
 * **执行动作**：
-  - 运行 `./scripts/deploy.sh` 编译部署。
-  - 双端（GTD 主站 + 国学站，若相关）联调验证。
-  - 关联 Issue 提交并完成关闭。
+  - 执行 `/code-review` 双轴（Standards + Spec）自检。
+  - 运行 `./scripts/deploy_staging.sh` 在 Staging（3020/3021）完成双端联调与真实接口验证（严禁擅自修改版本号或触碰生产 3000/3001）。
+  - 输出 `[代码已改] -> [单测已过] -> [真实接口/Staging 3020已测] -> [生产待授权]` 四维回执，关联 `#<Issue_ID>` 提交并关闭工单。
 
 ---
 
@@ -128,10 +129,10 @@
 ### 阶段 3/4: 产出重构方案 Spec (Solution Spec)
 * **卡片标识**：`[■■■□] 阶段 3/4: 产出重构方案 Spec`
 * **执行动作**：
-  - 编写 `docs/<refactor_name>_solution.md`，明确平滑重构路径（分步进行，不破坏现有功能）。
+  - 编写 `docs/architecture/<refactor_name>_solution.md`，明确平滑重构路径（分步进行，不破坏现有功能）。
 
 ### 阶段 4/4: 双轴 Review 与平滑重构 (Review & Refactor)
 * **卡片标识**：`[■■■■] 阶段 4/4: 双轴 Review 与平滑重构`
 * **执行动作**（参考 `/code-review`）：
   - 实施重构并进行双轴审查（**Standards 规范轴** + **Spec 功能轴**）。
-  - 运行 `./scripts/deploy.sh` 确保系统零回归。
+  - 运行 `./scripts/deploy_staging.sh` 在预发环境确保系统零回归，不擅自触碰生产环境。

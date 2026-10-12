@@ -5,5 +5,6 @@ This repository strictly adheres to the Automated Engineering SOPs defined in `d
 
 ## Automatic Workflow Discipline
 - **Bugs**: Follow SOP-1. Must create issues, build reproducible feedback loops, and fix via TDD.
-- **Features**: Follow SOP-2. Must grill requirements, model domain concepts in `CONTEXT.md`, and document specs in `docs/`.
+- **Features**: Follow SOP-2. Must grill requirements, model domain concepts in `CONTEXT.md`, and document specs in categorized subdirectories `docs/<category>/`.
 - **Architecture**: Follow SOP-3. Audit bloat, check module depth, and perform dual-axis code review.
+- **Staging First**: Validate on Staging (`./scripts/deploy_staging.sh`) first; never touch production (`./scripts/deploy.sh`) or bump version numbers without explicit release approval.

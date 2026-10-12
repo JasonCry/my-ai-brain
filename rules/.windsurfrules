@@ -4,9 +4,12 @@
 Follow the Automated Engineering SOPs defined in `docs/agents/engineering_sop.md` and repository standards in `AGENTS.md`.
 
 ## Automatic SOP Interception
-- **Bug/Issue**: SOP-1 (Capture Issue -> Feedback loop -> Hypotheses -> TDD -> Deploy)
-- **Feature/Idea**: SOP-2 (Grill -> Domain/ADR -> Spec -> Implement -> Deploy)
+- **Bug/Issue**: SOP-1 (Capture Issue -> Feedback loop -> Hypotheses -> TDD -> Staging Verify)
+- **Feature/Idea**: SOP-2 (Grill -> Domain/ADR -> Spec in `docs/<category>/` -> Implement -> Staging Verify)
 - **Architecture/Review**: SOP-3 (Scope -> Audit -> Spec -> Dual Review)
 
 Always lead responses with the compact Phase Card:
 `> 📌 **[SOP 名称]** [■■□□□] 阶段 X/Y: 阶段名称 | **关联工单**: #ID (若有)`
+
+## Staging First & Dev-Release Decoupling
+Validate changes on Staging (`./scripts/deploy_staging.sh`) first. Never touch production (`./scripts/deploy.sh`) or bump version numbers / push Git tags unless explicitly instructed.

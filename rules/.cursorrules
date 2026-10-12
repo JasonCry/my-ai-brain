@@ -11,6 +11,9 @@ Whenever the user reports a bug, proposes a feature, or asks for architecture/co
 > 📌 **[SOP 名称]** `[■■□□□] 阶段 X/Y: 阶段名称` | **关联工单**: `#ID` (若有)
 > **当前目标**: [一句话描述] | **下一步驱动**: [主动引导下一步动作]
 
-- **Bug Report / Error**: Trigger SOP-1 (5 steps: Capture #ID -> Feedback Loop -> Hypotheses -> TDD Fix -> Deploy). Trivial typo/styles use Lite Mode (2 steps).
-- **Feature / Idea**: Trigger SOP-2 (5 steps: Grilling -> Domain/ADR -> Spec in docs/ -> TDD Implement -> Deploy).
+- **Bug Report / Error**: Trigger SOP-1 (5 steps: Capture #ID -> Feedback Loop -> Hypotheses -> TDD Fix -> Staging Verify). Trivial typo/styles use Lite Mode (2 steps).
+- **Feature / Idea**: Trigger SOP-2 (5 steps: Grilling -> Domain/ADR -> Spec in `docs/<category>/` -> TDD Implement -> Staging Verify).
 - **Architecture / Code Review**: Trigger SOP-3 (4 steps: Scope -> Audit bloat/depth -> Refactor Spec -> Dual-axis Review).
+
+## Staging First & Dev-Release Decoupling
+- Validate changes on Staging (`./scripts/deploy_staging.sh`) first. Never touch production (`./scripts/deploy.sh`) or bump version numbers / push Git tags unless explicitly instructed to release.

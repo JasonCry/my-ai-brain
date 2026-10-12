@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # .git/hooks/pre-commit
-# 渐进式代码导航增量同步钩子 (Progressive Code Index Pre-commit Hook)
-# 由 my-ai-brain 自动注入：每次修改路由/存储/视图时无感同步 docs/ARCHITECTURE_SEAMS.json
+# 渐进式代码导航增量同步 + 研发与发版解耦物理拦截门禁 (Pre-commit Gate)
+# 由 my-ai-brain 自动注入
 # ==============================================================================
 set -euo pipefail
 
@@ -11,6 +11,18 @@ PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 STAGED_FILES="$(git diff --cached --name-only || true)"
 if [ -z "$STAGED_FILES" ]; then
     exit 0
+fi
+
+# 0. 研发与发版解耦硬门禁：日常提交严禁修改 pubspec.yaml 或 Cargo.toml 版本号（除非显式设置 ALLOW_RELEASE_BUMP=1）
+if [ "${ALLOW_RELEASE_BUMP:-0}" != "1" ]; then
+    if echo "$STAGED_FILES" | grep -Eq '^(flutter_app/pubspec\.yaml|pubspec\.yaml|backend/Cargo\.toml|Cargo\.toml)$'; then
+        if git diff --cached -- flutter_app/pubspec.yaml pubspec.yaml backend/Cargo.toml Cargo.toml 2>/dev/null | grep -Eq '^\+\s*version\s*[:=]'; then
+            echo "❌ [Pre-commit Release Decoupling Gate] 检测到日常提交修改了版本号 (pubspec.yaml / Cargo.toml)！" >&2
+            echo "   铁律：日常开发与 Staging 验证严禁递增版本号或打 Tag，防止误触发云端发布流水线。" >&2
+            echo "   若确为用户授权的正式发版，请通过 ALLOW_RELEASE_BUMP=1 或 ./scripts/publish_release.sh 执行。" >&2
+            exit 1
+        fi
+    fi
 fi
 
 # 1. 检测是否修改了核心路由、存储或视图文件，若是则自动刷新中观接缝索引

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# .git/hooks/commit-msg
+# GitHub Issue 关联追溯硬门禁 (Commit Message Issue Traceability Gate)
+# 强制每次提交携带 #<Issue_ID>（除非 Merge / Revert / release 或 ALLOW_NO_ISSUE=1）
+# ==============================================================================
+set -euo pipefail
+
+COMMIT_MSG_FILE="${1:-}"
+if [ -z "$COMMIT_MSG_FILE" ] || [ ! -f "$COMMIT_MSG_FILE" ]; then
+    exit 0
+fi
+
+if [ "${ALLOW_NO_ISSUE:-0}" = "1" ]; then
+    exit 0
+fi
+
+MSG_CONTENT="$(cat "$COMMIT_MSG_FILE")"
+
+# 允许 Merge、Revert 或自动版本发布提交直接通过
+if echo "$MSG_CONTENT" | grep -Eq '^(Merge |Revert |chore\(release\):|release:)'; then
+    exit 0
+fi
+
+# 强制检查是否包含 #<数字> 工单号
+if ! echo "$MSG_CONTENT" | grep -Eq '#[0-9]+'; then
+    echo "❌ [Commit-Msg Issue Gate] 提交信息缺少 GitHub Issue 关联编号（例如: #443）！" >&2
+    echo "   当前提交信息: $(head -n 1 "$COMMIT_MSG_FILE")" >&2
+    echo "   铁律要求：所有研发提交必须在 Commit Message 中携带 #<Issue_ID>（如 'fix: ... #443'）。" >&2
+    exit 1
+fi
+
+exit 0

@@ -22,11 +22,20 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 > **当前目标**: [一句话描述当前目标] | **下一步驱动**: [主动引导用户进入下一步动作]
 ```
 
-### SOP Routing Matrix:
-- **SOP-1 (Bug 缺陷攻坚流 - 5步)**: 遇到 "bug", "报错", "异常", "问题", "不工作", "崩溃", "失败", "数据不对" 等。立刻输出 `[■□□□□] 阶段 1/5: 捕获与工单建立`，执行 `gh issue create`，记录在 `changelog.md`，并主动驱动阶段 2 最小复现环。
-- **Lite Mode (轻量极简通道 - 2步)**: 仅当为纯文本勘误、单一简单样式调整等极简修改时，自动降级为 2 步（`[■□] 阶段 1/2: 极简登记与确认` -> `[■■] 阶段 2/2: 修改与部署`）。
-- **SOP-2 (特性演进流 - 5步)**: 遇到 "新需求", "新功能", "增加", "想做", "支持", "优化交互" 等。立刻输出 `[■□□□□] 阶段 1/5: 需求倾听与边界盘问`，调用 `/grill-me` 盘问边界，更新 `CONTEXT.md`，在 `docs/` 撰写 Spec，TDD 实施与部署。
-- **SOP-3 (架构治理流 - 4步)**: 遇到 "架构", "重构", "code review", "走查", "代码膨胀" 等。立刻输出 `[■□□□] 阶段 1/4: 明确审计范围与焦点`，查冗余与深浅，写方案 Spec，并做双轴审查。
+### SOP Routing Matrix & Mandatory Skill Auto-Loading (MUST read `SKILL.md` via `view_file` before coding):
+**严禁等待用户显式点名 Matt Pocock 技能！严禁只口头提及技能名而不读取 `SKILL.md`！** 凡进入以下场景，必须**自动调用 `view_file`** 加载对应技能并严格按其规范执行：
+- **SOP-1 (Bug 缺陷攻坚流 - 5步)**: 遇到 "bug", "报错", "异常", "问题", "不工作", "崩溃", "失败", "数据不对" 等。
+  - **强制自动加载技能**: `diagnosing-bugs` + `tdd` + `ponytail`。
+  - **动作**: 立刻输出 `[■□□□□] 阶段 1/5: 捕获与工单建立`，执行 `gh issue create`，记录在 `changelog.md`，按 `diagnosing-bugs` 先构建必红最小复现闭环（阶段 2）与可证伪假设（阶段 3），再按 `tdd` + `ponytail` 极简修复（阶段 4），阶段 5 仅部署 Staging 预发环境并输出 `[代码已改] -> [单测已过] -> [真实接口/Staging已测] -> [生产待授权]` 四维回执。
+- **Lite Mode (轻量极简通道 - 2步)**: 仅当为纯文本勘误、单一简单样式调整等极简修改时，自动降级为 2 步（`[■□] 阶段 1/2: 极简登记与确认` -> `[■■] 阶段 2/2: 修改与预发验证`），自动遵循 `ponytail`。
+- **SOP-2 (特性演进与日常编码流 - 5步)**: 遇到 "新需求", "新功能", "写代码", "实现", "增加", "想做", "支持", "优化交互" 等。
+  - **强制自动加载技能**:
+    - 需求/边界未清时：自动读取 `grill-with-docs`（协同 `grilling` + `domain-modeling`）盘问边界并维护 `CONTEXT.md` / ADR。
+    - 动手写代码/设计模块时：**无条件自动读取 `codebase-design`（深模块与接缝设计）+ `tdd`（垂直示踪弹切片）+ `ponytail`（极简反过度设计）**。
+    - 编码完成交付前：自动遵循 `code-review` 双轴（Standards + Spec）自检，并输出四维验收回执。
+- **SOP-3 (架构治理流 - 4步)**: 遇到 "架构", "重构", "code review", "走查", "代码膨胀" 等。
+  - **强制自动加载技能**: `codebase-design` + `ponytail-review` + `code-review`。
+  - **动作**: 立刻输出 `[■□□□] 阶段 1/4: 明确审计范围与焦点`，查冗余与深浅，写方案 Spec，并做双轴审查。
 
 ## 🗺️ Index-First 三层渐进式代码定位协议 (Mandatory · 严禁盲目全局 Grep)
 
