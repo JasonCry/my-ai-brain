@@ -1,9 +1,6 @@
 ---
 name: implement
-description: >-
-  End-to-end code implementation workflow driving vertical TDD slices at public seams,
-  L2 line-range slice editing, shift-left fast verification (verify_fast.sh), dual-axis
-  code-review, and Staging 3020 4-state receipt.
+description: End-to-end TDD vertical slice implementation, L2 slice editing, verify_fast.sh, and Staging receipt.
 ---
 
 # Implement (Spec-Anchored & Shift-Left Implementation Loop)

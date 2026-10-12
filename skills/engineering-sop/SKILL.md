@@ -1,11 +1,6 @@
 ---
 name: engineering-sop
-description: >-
-  Automated Engineering Standard Operating Procedures (SOPs). Covers Bug Triage & Fix
-  (SOP-1), Feature Evolution (SOP-2), Architecture Governance & Refactor (SOP-3), and
-  2-Step Lite Mode. TRIGGER AUTOMATICALLY whenever addressing bugs, developing new
-  features, writing code, conducting refactoring, code reviews, or when the user asks
-  to follow engineering SOPs.
+description: Full reference for SOP-1 (Bug Fix), SOP-2 (Feature), SOP-3 (Architecture), and 2-Step Lite Mode.
 ---
 
 # 自动化工程标准作业程序 (Automated Engineering SOPs)

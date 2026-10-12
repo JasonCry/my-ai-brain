@@ -1,8 +1,6 @@
 ---
 name: to-spec
-description: >-
-  Synthesize the current requirement discussion into a structured, verifiable technical
-  specification based on docs/agents/SPEC.template.md under docs/<category>/<feature>_solution.md.
+description: Synthesize requirement alignment into a verifiable technical spec based on docs/agents/SPEC.template.md.
 ---
 
 # To Spec (Structured Spec-Driven Contract Generator)

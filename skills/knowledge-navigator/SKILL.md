@@ -1,6 +1,6 @@
 ---
 name: knowledge-navigator
-description: Progressive knowledge retrieval and context loading navigator based on Siku-Quanshu (四库三藏) and Library OPAC cataloging. Efficiently senses task intents, locates call numbers from 00_OPAC_CATALOG.json, injects ultra-compact L1 Executive Cards and taboos (~200 tokens) to prevent bugs without flooding context, and loads L2 deep documents strictly on-demand. Trigger whenever starting architecture design, bug fixing, deployment modifications, or when the user mentions "查阅知识库", "看看踩坑经验", "检索知识库".
+description: Retrieve L1 Executive Cards and taboos from SoftwareDevKnowledgeBase (00_OPAC_CATALOG.json).
 ---
 
 # 知识库司书侍读与渐进式上下文加载规范 (Knowledge Navigator Skill)

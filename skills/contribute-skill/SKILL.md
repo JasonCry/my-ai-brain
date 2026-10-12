@@ -1,9 +1,6 @@
 ---
 name: contribute-skill
-description: >-
-  Guide and workflow for authoring, testing, and contributing new skills, SOPs, or rules
-  to the central my-ai-brain repository. Use when user says "贡献新skill", "新建skill",
-  "创建技能", "沉淀SOP", "contribute skill", or "add skill".
+description: Author, test, and contribute new skills, SOPs, or rules to the my-ai-brain repository.
 ---
 
 # 贡献新技能与 SOP 工作流 (Contribute Skill & SOP Workflow)

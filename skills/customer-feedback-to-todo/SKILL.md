@@ -1,11 +1,6 @@
 ---
 name: customer-feedback-to-todo
-description: >-
-  Standardized workflow and runbook for capturing raw customer/user feedback, community requests,
-  and unstructured ideas, analyzing user intent, and decomposing them into structured, actionable
-  engineering tasks in `todo.md` before implementation. Trigger whenever the user presents user
-  feedback, feature ideas, improvement suggestions, or asks to "记录需求", "整理反馈", "拆解成todo",
-  "归档到todo.md", or "先在todo里记录".
+description: Decompose raw user feedback or feature ideas into structured engineering tasks in todo.md.
 ---
 
 # 客户需求记录与待办拆解技能 (Customer Feedback to TODO Skill)

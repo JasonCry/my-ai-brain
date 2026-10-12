@@ -1,6 +1,6 @@
 ---
 name: retro
-description: "Conduct a retrospective on a coding session."
+description: Conduct a structured retrospective on a completed coding session.
 ---
 
 The user has asked for a **retrospective**. You are suggesting improvements to the coding agent's **environment** to improve future runs.

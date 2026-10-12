@@ -1,8 +1,6 @@
 ---
 name: implement-spec
-description: >-
-  Implement a multi-slice technical specification (docs/<category>/*_solution.md) using
-  tracer-bullet vertical slices, subagent context pointers, verify_fast.sh, and Staging verification.
+description: Execute a multi-slice technical specification (*_solution.md) via tracer-bullet slices and Staging checks.
 ---
 
 # Implement Spec (Multi-Slice Spec Execution)

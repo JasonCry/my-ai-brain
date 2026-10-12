@@ -1,6 +1,6 @@
 ---
 name: knowledge-distillation
-description: Standardized methodology and workflow for distilling software engineering experiences, architecture designs, network deployment recipes, troubleshooting SOPs, and reusable CBB modules using the Siku-Quanshu (四库三藏) and Library OPAC classification system. Trigger when the user asks to "沉淀知识库", "总结开发经验", "提取最佳实践", "沉淀CBB", "修典成书", or after completing non-trivial engineering solutions.
+description: Distill engineering practices and reusable CBB modules into SoftwareDevKnowledgeBase (Siku-Quanshu OPAC).
 ---
 
 # 软件工程四库三藏知识沉淀与修典规范 (Siku Knowledge Distillation Skill)

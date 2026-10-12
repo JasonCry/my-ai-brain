@@ -1,6 +1,6 @@
 ---
 name: taste-skill
-description: Anti-slop frontend skill (design-taste-frontend) for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check. Trigger on mentions of 'taste-skill', 'taste skill', 'design-taste-frontend', or requests for high-taste, anti-slop frontend design.
+description: High-taste, anti-slop frontend UI/UX design and redesign with strict pre-flight checks.
 ---
 
 # tasteskill: Anti-Slop Frontend Skill

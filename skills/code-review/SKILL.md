@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. TRIGGER AUTOMATICALLY after completing feature/bug code implementation before final delivery, or when the user asks to review a branch, PR, or work-in-progress changes."
+description: Dual-axis code review (Standards & Spec compliance) before delivery or when reviewing diffs/PRs.
 ---
 
 Two-axis review of the diff between `HEAD` and a fixed point the user supplies:

@@ -1,11 +1,6 @@
 ---
 name: mini-deploy
-description: >-
-  Standardized zero-compilation production deployment skill for Mac Mini with ultra-lean token usage (<500 tokens).
-  Seamlessly auto-detects between WuDangShuYuan (字疏·书院) and P12_Personal_Work_Assistant (AI 智能随身秘书) based
-  on git remote, triggers local release hot-reload without touching .env, enforces macOS ARM64 code signing,
-  and verifies health status in a single step. Trigger whenever the user asks to "上线", "部署", "热更", "生产部署",
-  "mini-deploy", or mentions deploying on Mac Mini.
+description: Zero-compilation production hot-reload deployment and health check for Mac Mini (P12 / WuDangShuYuan).
 ---
 
 # Mac Mini 跨项目免编译极简部署技能 (Mini Deploy Skill)

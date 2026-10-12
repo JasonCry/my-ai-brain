@@ -1,6 +1,6 @@
 ---
 name: diagnosing-bugs
-description: Systematic diagnosis loop (tight feedback loop -> falsifiable hypotheses -> root-cause fix with regression test) for bugs and performance regressions. TRIGGER AUTOMATICALLY whenever the user reports a bug, error, crash, exception, broken behavior, failing test, or performance issue.
+description: Systematic bug diagnosis (reproduction loop, falsifiable hypotheses, root-cause fix) for complex bugs.
 ---
 
 # Diagnosing Bugs

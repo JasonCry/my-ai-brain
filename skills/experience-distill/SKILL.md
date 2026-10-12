@@ -1,10 +1,6 @@
 ---
 name: experience-distill
-description: >-
-  日常与 AI 协同中一键自动沉淀经验、心法、思维框架、反思禁忌(Taboos)与SOP的技能。在用户讨论完复杂任务、方案设计、技术排障或管理决策后，
-  只要用户提及 "萃取经验"、"结案沉淀"、"提炼方法论"、"固化SOP"、"总结心法"、"沉淀经验" 或 "/distill"，
-  自动回顾会话上下文，过滤掉泛常识，提炼出包含场景边界、思维框架、踩坑禁忌(Taboos)、决策取舍(Trade-offs)
-  及最小可用Checklist的结构化Markdown卡片，并自动自适应输出到 Obsidian Vault 或项目工程文档。
+description: Distill engineering lessons, mental models, taboos, and checklists into Obsidian or project docs.
 ---
 
 # 在流经验与方法论沉淀技能 (Experience Distill Skill)

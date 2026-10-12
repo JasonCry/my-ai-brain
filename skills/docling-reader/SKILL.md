@@ -1,12 +1,6 @@
 ---
 name: docling-reader
-description: >-
-  Zero-prompt, non-destructive structured document reader powered by IBM Docling.
-  Automatically intercepts .pdf, .docx, .pptx, and .xlsx files to extract high-fidelity
-  Markdown, complex tables (TableFormer), multi-column layouts (DocLayNet), and hierarchical
-  RAG chunks into a hidden .docling_cache/<sha256>/ shadow directory without moving original files.
-  Trigger AUTOMATICALLY whenever reading, analyzing, comparing, summarizing, or ingesting any
-  .pdf, .docx, .pptx, or .xlsx file across Antigravity, ChatGPT/Codex, DSH, Claude, or P12 Smart Secretary.
+description: Zero-prompt structured reader for .pdf, .docx, .pptx, and .xlsx via p12-docling shadow cache.
 ---
 
 # Docling 异构文档零感知高保真精读技能 (Docling Reader Skill)

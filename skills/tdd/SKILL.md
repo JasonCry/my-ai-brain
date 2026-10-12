@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development (vertical tracer-bullet slices, red-green loop at pre-agreed public seams). TRIGGER AUTOMATICALLY whenever implementing new features, writing business logic, fixing bugs, or writing/updating tests.
+description: Test-driven development loop (Red -> Green -> Refactor) at public interface seams.
 ---
 
 # Test-Driven Development

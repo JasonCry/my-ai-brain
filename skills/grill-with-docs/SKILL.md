@@ -1,10 +1,6 @@
 ---
 name: grill-with-docs
-description: >-
-  Deep requirement boundary interview and active domain modeling (CONTEXT.md & ADRs).
-  Self-contained deep skill combining Design-Tree Frontier Grilling, Index-First codebase
-  fact-checking, and Domain Glossary/ADR maintenance without secondary skill hops.
-  TRIGGER AUTOMATICALLY in SOP-2 Stage 1-2 when requirements or boundaries are underspecified.
+description: Deep requirement boundary interview, codebase fact-checking, and domain modeling (SOP-2 Stage 1-2).
 ---
 
 # Grill with Docs (Boundary Interview & Active Domain Modeling)

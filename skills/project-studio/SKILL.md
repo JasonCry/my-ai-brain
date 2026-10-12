@@ -1,11 +1,6 @@
 ---
 name: project-studio
-description: >-
-  Standardized multi-project governance and studio cockpit skill for solo founders and indie hackers.
-  Enforces cross-repository aggregation under GitHub Projects (v2), customer voice (VOC) tracking,
-  capability matrix documentation (docs/CAPABILITIES.md), and zero-config project scaffolding.
-  Trigger when user says "初始化工作台", "接入工作台", "新建项目治理", "能力大地图", "project-studio",
-  "init project studio", or asks to manage software projects systematically.
+description: Multi-project governance, GitHub Projects v2 cockpit, VOC tracking, and CAPABILITIES.md scaffolding.
 ---
 
 # 独立开发者多项目统一工作台治理技能 (Project Studio Skill)

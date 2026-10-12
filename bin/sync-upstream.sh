@@ -24,23 +24,36 @@ else
   git clone --depth 1 "${MATT_REPO}" "${MATT_DIR}" --quiet
 fi
 
-# 拷贝更新到本地 skills 目录
-echo "   ➔ 正在比对并同步上游技能到 skills/..."
-cp -r "${MATT_DIR}/skills"/* "${BRAIN_ROOT}/skills/"
+# 拷贝更新到本地 skills 目录（跳过已归档、已裁剪及本地深度定制的技能）
+echo "   ➔ 正在比对并同步上游技能到 skills/（保护本地定制与归档过滤）..."
+SKIP_SKILLS="grill-with-docs to-spec implement implement-spec grill-me gh-driven-workflow ponytail-gain ponytail-help loop-me ask-matt wait-what"
+for s_dir in "${MATT_DIR}/skills"/*; do
+  [ -d "${s_dir}" ] || continue
+  s_name="$(basename "${s_dir}")"
+  if [ -d "${BRAIN_ROOT}/archived-skills/${s_name}" ]; then
+    continue
+  fi
+  if echo " ${SKIP_SKILLS} " | grep -q " ${s_name} "; then
+    continue
+  fi
+  cp -r "${s_dir}" "${BRAIN_ROOT}/skills/"
+done
 
-# 1.5 自动注入 Matt Pocock 核心技能的自动触发描述 (防止被上游被动式 description 覆盖)
-echo "   ➔ 正在固化 Matt Pocock 核心工程技能的自动触发器 (Auto-Trigger Patch)..."
+# 1.5 自动固化精简版 L0 路由描述 (防止被上游冗长 description 覆盖)
+echo "   ➔ 正在固化 L0 极简路由描述 (Concise Catalog Patch)..."
 python3 - "${BRAIN_ROOT}/skills" << 'PY_EOF'
 import os, re, sys
 
 skills_root = sys.argv[1]
 overrides = {
-    "codebase-design": 'Shared vocabulary and architecture discipline for designing deep modules (module, interface, depth, seam, adapter, leverage, locality). TRIGGER AUTOMATICALLY on ANY non-trivial coding task when creating or modifying modules, designing interfaces/APIs, deciding where a seam goes, refactoring, or making code testable and AI-navigable.',
-    "tdd": 'Test-driven development (vertical tracer-bullet slices, red-green loop at pre-agreed public seams). TRIGGER AUTOMATICALLY whenever implementing new features, writing business logic, fixing bugs, or writing/updating tests.',
-    "diagnosing-bugs": 'Systematic diagnosis loop (tight feedback loop -> falsifiable hypotheses -> root-cause fix with regression test) for bugs and performance regressions. TRIGGER AUTOMATICALLY whenever the user reports a bug, error, crash, exception, broken behavior, failing test, or performance issue.',
-    "grill-with-docs": 'A relentless interview to sharpen a plan, feature, or design while maintaining CONTEXT.md and ADRs. TRIGGER AUTOMATICALLY when the user proposes a new feature, architectural change, or underspecified requirement in a working directory.',
-    "implement": '"End-to-end code implementation workflow driving /tdd at pre-agreed seams, regular typechecking/test runs, and /code-review before commit. TRIGGER AUTOMATICALLY when implementing features, specs, issues, or coding tasks."',
-    "code-review": '"Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo\'s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. TRIGGER AUTOMATICALLY after completing feature/bug code implementation before final delivery, or when the user asks to review a branch, PR, or work-in-progress changes."'
+    "codebase-design": "Deep module architecture and interface seam design discipline for non-trivial coding or refactoring.",
+    "tdd": "Test-driven development loop (Red -> Green -> Refactor) at public interface seams.",
+    "diagnosing-bugs": "Systematic bug diagnosis (reproduction loop, falsifiable hypotheses, root-cause fix) for complex bugs.",
+    "code-review": "Dual-axis code review (Standards & Spec compliance) before delivery or when reviewing diffs/PRs.",
+    "ponytail": "YAGNI minimal coding discipline: stdlib first, zero speculative abstractions, shortest working solution.",
+    "ponytail-audit": "Whole-repo audit for over-engineering: ranked list of bloat and abstractions to delete or simplify.",
+    "ponytail-debt": "Harvest all `ponytail:` shortcut comments across the codebase into a tracked technical debt ledger.",
+    "ponytail-review": "Diff/PR review focused exclusively on cutting over-engineering, dead flexibility, and unneeded deps.",
 }
 
 for skill, desc in overrides.items():
@@ -48,14 +61,11 @@ for skill, desc in overrides.items():
     if os.path.exists(p):
         with open(p, "r", encoding="utf-8") as f:
             content = f.read()
-        new_content = re.sub(
-            r"(?m)^description:.*$",
-            f"description: {desc}",
-            content,
-            count=1
-        )
-        with open(p, "w", encoding="utf-8") as f:
-            f.write(new_content)
+        m = re.match(r"^---\n(.*?)\n---\n?(.*)", content, re.S)
+        if m:
+            body = m.group(2).lstrip()
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(f"---\nname: {skill}\ndescription: {desc}\n---\n\n" + body)
 PY_EOF
 
 # 2. 刷新全局软链接

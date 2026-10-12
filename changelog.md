@@ -5,6 +5,10 @@ All notable changes to the `my-ai-brain` project will be documented in this file
 ## [Unreleased]
 
 ### Added
+- perf(skills): L0 技能路由目录极简瘦身——压缩全量 YAML `description`、合并包装器技能、归档低频课程技能 (#449)
+  - 将 `skills/*/SKILL.md` 的 YAML `description` 统一压缩为 `<= 106` 字符的一句话高信噪比触发短语，正文细节保留在 `SKILL.md` Body 中按需加载。
+  - 将 `ai-brain-init/push/update/sync-upstream` 4 个包装器合并为单一 `ai-brain-sync`，将 `kb-push/sync` 合并为单一 `kb-sync`。
+  - 将 16 个外部课程专属与低频技能移入 `archived-skills/`（不默认挂载至全局常驻目录），并在 `bin/sync-upstream.sh` 中增加保护过滤，配合挂起非研发 `science` 插件，使常驻 `<skills>` 目录从 118 项（~11,500 Tokens）降至 62 项（~2,800 Tokens），每轮对话净省 ~76% 目录 Token 开销。
 - chore(governance): 收敛项目级规则为 `AGENTS.md` 唯一入口并实现全局/项目正交分层 (#6)
   - 鉴于 Antigravity、Claude Code (v2.1.277+)、Codex、DSH、Cursor 均已原生识别项目根 `AGENTS.md`，且 `CLAUDE.md` 共存会遮蔽 `AGENTS.md`，升级 `bin/init-project.sh` 默认仅维护唯一入口 `AGENTS.md`，并自动清理项目内历史遗留的 `CLAUDE.md`、`.cursorrules`、`.cursor/rules/`、`.windsurfrules`、`.github/copilot-instructions.md`。
   - 实现全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）与项目 `AGENTS.md` 的正交分层：项目 `AGENTS.md` 托管块精简为 12 行轻量索引指针，彻底消除每次对话双重注入 70 行通用 SOP 的 Token 浪费。
