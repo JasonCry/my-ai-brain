@@ -43,14 +43,37 @@ else
   fi
 fi
 
-cp "${BRAIN_ROOT}/rules/.cursorrules" "${TARGET_DIR}/"
+[ ! -f "${TARGET_DIR}/.cursorrules" ] && cp "${BRAIN_ROOT}/rules/.cursorrules" "${TARGET_DIR}/"
 cp "${BRAIN_ROOT}/rules/engineering-sop.mdc" "${TARGET_DIR}/.cursor/rules/"
-cp "${BRAIN_ROOT}/rules/.windsurfrules" "${TARGET_DIR}/"
-cp "${BRAIN_ROOT}/rules/copilot-instructions.md" "${TARGET_DIR}/.github/"
+[ ! -f "${TARGET_DIR}/.windsurfrules" ] && cp "${BRAIN_ROOT}/rules/.windsurfrules" "${TARGET_DIR}/"
+[ ! -f "${TARGET_DIR}/.github/copilot-instructions.md" ] && cp "${BRAIN_ROOT}/rules/copilot-instructions.md" "${TARGET_DIR}/.github/"
+
+# 4. 注入三层渐进式代码导航探针与自动同步底座 (3-Tier Progressive Code Navigation)
+echo "   ➔ 注入三层代码导航探针 (scripts/code_query.sh & auto_sync_code_index.sh)..."
+mkdir -p "${TARGET_DIR}/scripts"
+cp "${BRAIN_ROOT}/templates/scripts/code_query.sh" "${TARGET_DIR}/scripts/code_query.sh"
+cp "${BRAIN_ROOT}/templates/scripts/auto_sync_code_index.sh" "${TARGET_DIR}/scripts/auto_sync_code_index.sh"
+chmod +x "${TARGET_DIR}/scripts/code_query.sh" "${TARGET_DIR}/scripts/auto_sync_code_index.sh"
+
+if [ ! -f "${TARGET_DIR}/docs/CAPABILITIES.md" ] && [ -f "${BRAIN_ROOT}/templates/docs/CAPABILITIES.template.md" ]; then
+  cp "${BRAIN_ROOT}/templates/docs/CAPABILITIES.template.md" "${TARGET_DIR}/docs/CAPABILITIES.md"
+fi
+if [ ! -f "${TARGET_DIR}/llms.txt" ] && [ -f "${BRAIN_ROOT}/templates/docs/llms.template.txt" ]; then
+  cp "${BRAIN_ROOT}/templates/docs/llms.template.txt" "${TARGET_DIR}/llms.txt"
+fi
+
+if [ -d "${TARGET_DIR}/.git" ]; then
+  echo "   ➔ 挂载 Git pre-commit 增量索引钩子 (.git/hooks/pre-commit)..."
+  mkdir -p "${TARGET_DIR}/.git/hooks"
+  cp "${BRAIN_ROOT}/templates/hooks/pre-commit" "${TARGET_DIR}/.git/hooks/pre-commit"
+  chmod +x "${TARGET_DIR}/.git/hooks/pre-commit"
+fi
+
+# 首次初始化生成当前项目的 docs/ARCHITECTURE_SEAMS.json
+"${TARGET_DIR}/scripts/auto_sync_code_index.sh" || true
 
 echo "✅ [my-ai-brain] 注入完成！该项目已即刻具备以下能力："
 echo "   1. Antigravity / Gemini: 自动加载 AGENTS.md 与工程 SOP"
 echo "   2. Claude Code: 自动识别 CLAUDE.md 并执行 3 大 SOP"
-echo "   3. Cursor: .cursorrules & .cursor/rules/ 生效"
-echo "   4. Windsurf: .windsurfrules 自动生效"
-echo "   5. GitHub Copilot: .github/copilot-instructions.md 生效"
+echo "   3. Cursor / Windsurf / Copilot: 全套规则自动生效"
+echo "   4. 零盲搜三层代码导航: llms.txt + CAPABILITIES.md + code_query.sh (trace/outline/symbol) + Git Hook 自动随动"

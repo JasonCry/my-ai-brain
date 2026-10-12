@@ -1,0 +1,12 @@
+# Project AI Architecture Index (llms.txt)
+
+> 💡 **Index-First Protocol**: Read this file FIRST before running any search. Then use `./scripts/code_query.sh trace <api>` or `./scripts/code_query.sh outline <file>` to get exact line ranges (`LStart-LEnd`) for `view_file`.
+
+---
+
+## 🗺️ Feature-to-Code Seams (核心能力代码路由映射)
+
+### 1. 核心业务入口 (Core Modules)
+- Capability Matrix: `docs/CAPABILITIES.md`
+- Architecture Seams JSON: `docs/ARCHITECTURE_SEAMS.json`
+- Code Navigation Probe: `./scripts/code_query.sh`

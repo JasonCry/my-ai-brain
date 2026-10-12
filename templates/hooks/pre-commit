@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# .git/hooks/pre-commit
+# 渐进式代码导航增量同步钩子 (Progressive Code Index Pre-commit Hook)
+# 由 my-ai-brain 自动注入：每次修改路由/存储/视图时无感同步 docs/ARCHITECTURE_SEAMS.json
+# ==============================================================================
+set -euo pipefail
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+STAGED_FILES="$(git diff --cached --name-only || true)"
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+# 1. 检测是否修改了核心路由、存储或视图文件，若是则自动刷新中观接缝索引
+if echo "$STAGED_FILES" | grep -Eq '^(backend/src/(routes|storage)/|flutter_app/lib/(views|widgets|providers)/|src/)'; then
+    if [ -x "$PROJECT_ROOT/scripts/auto_sync_code_index.sh" ]; then
+        "$PROJECT_ROOT/scripts/auto_sync_code_index.sh" >/dev/null 2>&1 || true
+        if [ -f "$PROJECT_ROOT/docs/ARCHITECTURE_SEAMS.json" ]; then
+            git add "$PROJECT_ROOT/docs/ARCHITECTURE_SEAMS.json"
+        fi
+    fi
+fi
+
+# 2. 检测是否新增了顶层路由或页面视图文件，提醒同步宏观地图 (CAPABILITIES.md / llms.txt)
+NEW_MODULES="$(git diff --cached --diff-filter=A --name-only | grep -E '^(backend/src/routes/.*\.rs|flutter_app/lib/views/.*_view\.dart|src/(views|pages|routes)/)' || true)"
+if [ -n "$NEW_MODULES" ]; then
+    if ! echo "$STAGED_FILES" | grep -Eq '^(docs/CAPABILITIES\.md|llms\.txt)$'; then
+        echo "💡 [Progressive Nav Notice] 检测到新增模块文件:"
+        echo "$NEW_MODULES" | sed 's/^/   + /'
+        echo "   请确认是否需要将新能力入口同步登记至 docs/CAPABILITIES.md 与 llms.txt"
+    fi
+fi
+
+exit 0

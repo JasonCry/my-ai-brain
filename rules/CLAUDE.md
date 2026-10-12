@@ -21,3 +21,16 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 - **SOP-1 (Bug 缺陷攻坚流)**: Triggered by "bug", "报错", "异常", "问题", "不工作", "崩溃". Immediately show `[■□□□□] 阶段 1/5: 捕获与工单建立`, track the issue, build a feedback loop, test hypotheses, fix via TDD, and verify. (Trivial style/text fixes auto-downgrade to Lite Mode 2 steps).
 - **SOP-2 (特性演进流)**: Triggered by "新需求", "新功能", "增加", "想做", "支持". Display `[■□□□□] 阶段 1/5: 需求倾听与边界盘问`, grill boundaries, model domain concepts into `CONTEXT.md`/ADRs, create spec in `docs/`, and implement.
 - **SOP-3 (架构治理流)**: Triggered by "架构", "重构", "code review", "走查", "膨胀". Display `[■□□□] 阶段 1/4: 明确审计范围与焦点`, audit bloat/depth, generate refactor spec, and perform dual-axis review.
+
+## Index-First 3-Tier Progressive Code Navigation (Mandatory)
+
+NEVER start by running blind repo-wide `grep` or reading entire large files. Always follow the 3-tier funnel:
+1. **L0 Macro**: Read `llms.txt` or run `./scripts/code_query.sh feature <keyword>` (`docs/CAPABILITIES.md`).
+2. **L1 Meso**: Run `./scripts/code_query.sh trace <api_or_module>` to inspect end-to-end seams (`docs/ARCHITECTURE_SEAMS.json`).
+3. **L2 Micro**: Run `./scripts/code_query.sh outline <file_path>` or `./scripts/code_query.sh symbol <name>` to get exact `[LStart-LEnd]` line numbers, then slice-read only those lines.
+
+## Zero-Prompt Docling Document Reading Gate (Mandatory)
+
+Whenever asked to read, analyze, compare, summarize, or ingest any `.pdf`, `.docx`, `.pptx`, or `.xlsx` file:
+1. **Automatic Interception**: NEVER wait for the user to say "use docling", and NEVER use lossy extractors (`pypdf`, `pdfplumber`, `pdftotext`). Always run `~/.local/bin/p12-docling --input "<file_path>"` automatically.
+2. **Non-Destructive Shadow Cache**: Never move or rename the user's original file. Read the high-fidelity Markdown from `parsed_md_path` returned in the JSON receipt (`.docling_cache/<sha256>/parsed.md`).
