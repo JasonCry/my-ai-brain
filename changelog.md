@@ -5,6 +5,10 @@ All notable changes to the `my-ai-brain` project will be documented in this file
 ## [Unreleased]
 
 ### Added
+- chore(governance): 收敛项目级规则为 `AGENTS.md` 唯一入口并实现全局/项目正交分层 (#6)
+  - 鉴于 Antigravity、Claude Code (v2.1.277+)、Codex、DSH、Cursor 均已原生识别项目根 `AGENTS.md`，且 `CLAUDE.md` 共存会遮蔽 `AGENTS.md`，升级 `bin/init-project.sh` 默认仅维护唯一入口 `AGENTS.md`，并自动清理项目内历史遗留的 `CLAUDE.md`、`.cursorrules`、`.cursor/rules/`、`.windsurfrules`、`.github/copilot-instructions.md`。
+  - 实现全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）与项目 `AGENTS.md` 的正交分层：项目 `AGENTS.md` 托管块精简为 12 行轻量索引指针，彻底消除每次对话双重注入 70 行通用 SOP 的 Token 浪费。
+  - 删除 `rules/` 下不再向项目分发的 `.cursorrules`、`engineering-sop.mdc`、`.windsurfrules`、`copilot-instructions.md` 碎片模板。
 - chore(governance): 消除部署指令互搏、实现 `init-project.sh` 幂等托管块并强化 Git Hook 物理防呆门禁 (#5)
   - 统一 `sop/engineering_sop.md`、`skills/engineering-sop/SKILL.md` 及 `rules/*` 为 **Staging First (`deploy_staging.sh`) + 研发/发版解耦**，并将 Spec 产出路径规范至 `docs/<category>/<feature>_solution.md`。
   - 升级 `bin/init-project.sh` 采用 `<!-- my-ai-brain:begin/end -->` 正则幂等替换 `AGENTS.md`，根治多次注入首尾重复拼接问题。

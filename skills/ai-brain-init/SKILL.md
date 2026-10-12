@@ -1,6 +1,6 @@
 ---
 name: ai-brain-init
-description: 一键初始化或更新个人 AI 工程中枢资产 (my-ai-brain)。自动同步全套工程 SOP、50+ 专业 Skills、多 AI 入口规则及 MCP 配置到当前环境。
+description: 一键初始化或更新个人 AI 工程中枢资产 (my-ai-brain)。自动同步全套工程 SOP、50+ 专业 Skills、AGENTS.md 正交规则及 MCP 配置到当前环境。
 ---
 
 # AI Brain Initializer (/ai-brain-init)
@@ -16,14 +16,15 @@ description: 一键初始化或更新个人 AI 工程中枢资产 (my-ai-brain)�
 
 ### 2. 执行本机全局环境挂载 (Global Sync)
 - 运行 `bash ~/Projects/my-ai-brain/bin/install-global.sh`
-- 将所有 Skills 软链挂载到 `~/.gemini/config/skills/`
-- 激活本机各 AI 工具的全局感知能力
+- 将所有 Skills 软链挂载到 `~/.gemini/config/skills/`、`~/.claude/skills/`、`~/.codex/skills/`、`~/.dsh/skills/`
+- 将跨项目通用 SOP 同步至本机全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）
 
-### 3. 为当前工作区注入全套工程 SOP 与多 AI 规则 (Workspace Init)
+### 3. 为当前工作区注入正交工程规范与导航底座 (Workspace Init)
 - 运行 `bash ~/Projects/my-ai-brain/bin/init-project.sh .`
-- 确保当前项目拥有：
+- 确保当前项目收敛为 **All-in `AGENTS.md` 单一入口模式**：
+  - `AGENTS.md`（全 AI 工具原生自动识别，仅注入正交轻量索引，不与全局规则重复，并自动清理 `CLAUDE.md` / `.cursorrules` 等冗余影子文件）
   - `docs/agents/engineering_sop.md`（Bug 攻坚、特性演进、架构治理 3 大 SOP）
-  - `AGENTS.md`、`CLAUDE.md`、`.cursorrules`、`.cursor/rules/`、`.windsurfrules`、`.github/copilot-instructions.md`
+  - `scripts/code_query.sh` + `.git/hooks/pre-commit` & `commit-msg`
 
 ### 4. 交付反馈
 向用户展示初始化成功卡片，列出已激活的能力与当前项目状态，告知用户现在可以直接开始工程实践（提 Bug、新需求或架构走查）。

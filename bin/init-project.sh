@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # my-ai-brain: init-project.sh
-# 将本 AI 工程资产库中的通用 SOP、规则模板一键幂等注入到任意目标项目仓库
+# 将本 AI 工程资产库中的通用 SOP、轻量正交索引与 Git Hooks 一键幂等注入目标项目
+# 架构原则:
+#   1. 全局配置 (~/.gemini/GEMINI.md, ~/.claude/CLAUDE.md, ~/.codex/AGENTS.md) 承载跨项目通用 SOP；
+#   2. 项目根目录仅维护唯一入口 AGENTS.md（主流 AI 工具全部原生识别），不生成重复的 CLAUDE.md / .cursorrules 等影子文件。
 # ==============================================================================
 
 set -euo pipefail
@@ -9,30 +12,47 @@ set -euo pipefail
 TARGET_DIR="${1:-.}"
 BRAIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "🧠 [my-ai-brain] 正在为目标项目注入统一工程资产: ${TARGET_DIR}..."
+echo "🧠 [my-ai-brain] 正在为目标项目注入统一工程资产 (All-in AGENTS.md 正交模式): ${TARGET_DIR}..."
 
-# 1. 建立目录结构
+# 1. 建立目录结构并清理历史遗留的多余影子规则文件（避免遮蔽 AGENTS.md）
 mkdir -p "${TARGET_DIR}/docs/agents"
-mkdir -p "${TARGET_DIR}/.cursor/rules"
-mkdir -p "${TARGET_DIR}/.github"
+rm -f "${TARGET_DIR}/CLAUDE.md" \
+      "${TARGET_DIR}/.cursorrules" \
+      "${TARGET_DIR}/.windsurfrules" \
+      "${TARGET_DIR}/.github/copilot-instructions.md" \
+      "${TARGET_DIR}/.cursor/rules/engineering-sop.mdc"
+rmdir "${TARGET_DIR}/.cursor/rules" "${TARGET_DIR}/.cursor" 2>/dev/null || true
 
-# 2. 注入单一事实源 (SSOT) SOP 文件
+# 2. 注入单一事实源 (SSOT) SOP 参考文档
 echo "   ➔ 写入 SOP 规范文档 (docs/agents/)..."
 cp "${BRAIN_ROOT}/sop/engineering_sop.md" "${TARGET_DIR}/docs/agents/"
 [ -f "${BRAIN_ROOT}/sop/issue-tracker.md" ] && cp "${BRAIN_ROOT}/sop/issue-tracker.md" "${TARGET_DIR}/docs/agents/"
 [ -f "${BRAIN_ROOT}/sop/triage-labels.md" ] && cp "${BRAIN_ROOT}/sop/triage-labels.md" "${TARGET_DIR}/docs/agents/"
 [ -f "${BRAIN_ROOT}/sop/domain.md" ] && cp "${BRAIN_ROOT}/sop/domain.md" "${TARGET_DIR}/docs/agents/"
 
-# 3. 幂等注入多 AI 入口规则（使用 <!-- my-ai-brain:begin/end --> 托管块防止重复拼接）
-echo "   ➔ 幂等同步多 AI 统一规则入口 (AGENTS, Claude, Cursor, Windsurf, Copilot)..."
-python3 - "${TARGET_DIR}/AGENTS.md" "${BRAIN_ROOT}/rules/AGENTS.md" << 'PY_EOF'
+# 3. 幂等注入项目级 AGENTS.md 正交轻量托管块（不重复拷贝全局已有的大段通用 SOP）
+echo "   ➔ 幂等同步项目唯一规则入口 (AGENTS.md)..."
+python3 - "${TARGET_DIR}/AGENTS.md" << 'PY_EOF'
 import os, re, sys
 
-target_path, source_path = sys.argv[1], sys.argv[2]
-with open(source_path, "r", encoding="utf-8") as f:
-    source_content = f.read().strip()
+target_path = sys.argv[1]
 
-block = f"<!-- my-ai-brain:begin -->\n{source_content}\n<!-- my-ai-brain:end -->\n"
+block = """<!-- my-ai-brain:begin -->
+## 🧠 Project-Level AI Brain Index & References (Orthogonal to Global Rules)
+
+> 全局通用规则（沟通契约、SOP 1~3 阶段卡与技能强制自动加载、Docling 门禁）已由本机全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）统一注入，此处不再重复拷贝。
+
+- **Index-First 三层代码定位探针（严禁全仓盲目 `grep`）**：
+  1. **L0 宏观锁域**：读取 `llms.txt` 或执行 `./scripts/code_query.sh feature <关键词>`（检索 `docs/CAPABILITIES.md`）。
+  2. **L1 中观溯源**：执行 `./scripts/code_query.sh trace <API或模块名>`（检索 `docs/ARCHITECTURE_SEAMS.json`）。
+  3. **L2 微观定行**：执行 `./scripts/code_query.sh outline <文件>` 或 `./scripts/code_query.sh symbol <符号>` 获取 `[LStart-LEnd]`，再用 `view_file` 按行切片读取。
+- **Repository Agent Docs**:
+  - **Automated Engineering SOPs**: `docs/agents/engineering_sop.md`
+  - **Issue Tracker**: `docs/agents/issue-tracker.md` (GitHub Issues via `gh` CLI)
+  - **Triage Labels**: `docs/agents/triage-labels.md`
+  - **Domain Context & ADRs**: `CONTEXT.md` + `docs/adr/` (see `docs/agents/domain.md`)
+<!-- my-ai-brain:end -->
+"""
 
 if os.path.exists(target_path):
     with open(target_path, "r", encoding="utf-8") as f:
@@ -47,20 +67,12 @@ if os.path.exists(target_path):
     else:
         updated = existing.rstrip() + "\n\n" + block
 else:
-    updated = block
+    header = "# Agent Guidelines & Engineering Standards\n\n> 本文件为当前项目唯一的 AI 工程开发与架构规范入口（Antigravity、Claude Code、Codex、DSH、Cursor 均自动识别）。\n\n"
+    updated = header + block
 
 with open(target_path, "w", encoding="utf-8") as f:
     f.write(updated)
 PY_EOF
-
-if [ ! -f "${TARGET_DIR}/CLAUDE.md" ]; then
-  cp "${BRAIN_ROOT}/rules/CLAUDE.md" "${TARGET_DIR}/"
-fi
-
-[ ! -f "${TARGET_DIR}/.cursorrules" ] && cp "${BRAIN_ROOT}/rules/.cursorrules" "${TARGET_DIR}/"
-cp "${BRAIN_ROOT}/rules/engineering-sop.mdc" "${TARGET_DIR}/.cursor/rules/"
-[ ! -f "${TARGET_DIR}/.windsurfrules" ] && cp "${BRAIN_ROOT}/rules/.windsurfrules" "${TARGET_DIR}/"
-[ ! -f "${TARGET_DIR}/.github/copilot-instructions.md" ] && cp "${BRAIN_ROOT}/rules/copilot-instructions.md" "${TARGET_DIR}/.github/"
 
 # 4. 注入三层渐进式代码导航探针与自动同步底座 (3-Tier Progressive Code Navigation)
 echo "   ➔ 注入三层代码导航探针 (scripts/code_query.sh & auto_sync_code_index.sh)..."
@@ -90,8 +102,7 @@ fi
 # 首次初始化生成当前项目的 docs/ARCHITECTURE_SEAMS.json
 "${TARGET_DIR}/scripts/auto_sync_code_index.sh" || true
 
-echo "✅ [my-ai-brain] 注入完成！该项目已即刻具备以下能力："
-echo "   1. Antigravity / Gemini: 自动加载 AGENTS.md 幂等托管块与工程 SOP"
-echo "   2. Claude Code: 自动识别 CLAUDE.md 并执行 3 大 SOP"
-echo "   3. Cursor / Windsurf / Copilot: 全套规则自动生效"
-echo "   4. 零盲搜三层代码导航 + Git Hook 物理防呆门禁 (版本解耦拦截 + #IssueID 校验 + 接缝自动随动)"
+echo "✅ [my-ai-brain] 注入完成！该项目已收敛为 All-in AGENTS.md 正交模式："
+echo "   1. 唯一入口: AGENTS.md (Antigravity / Claude Code / Codex / DSH / Cursor 全工具原生识别，零影子文件污染)"
+echo "   2. 正交分层: 全局配置管通用 SOP，项目 AGENTS.md 仅管项目契约与轻量索引（消除双重 Token 注入）"
+echo "   3. 物理门禁: llms.txt + code_query.sh + Git Hooks (版本防呆 + #IssueID 校验 + 接缝自动随动)"
