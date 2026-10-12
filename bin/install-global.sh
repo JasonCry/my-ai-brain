@@ -16,6 +16,7 @@ TARGET_SKILL_DIRS=(
   "${HOME}/.claude/skills"
   "${HOME}/.codex/skills"
   "${HOME}/.agents/skills"
+  "${HOME}/.dsh/skills"
 )
 
 for target_dir in "${TARGET_SKILL_DIRS[@]}"; do
@@ -53,16 +54,29 @@ cat << JSON_EOF > "${GEMINI_CONFIG_DIR}/skills.json"
 JSON_EOF
 echo "   ➔ 写入 Antigravity skills.json 声明配置..."
 
-# 3. 配置 Codex 全局规则 (AGENTS.md)
+# 3. 配置 Codex / Claude / DSH 全局规则 (AGENTS.md & CLAUDE.md)
 if [ -f "${BRAIN_ROOT}/rules/AGENTS.md" ]; then
   mkdir -p "${HOME}/.codex"
   cp "${BRAIN_ROOT}/rules/AGENTS.md" "${HOME}/.codex/AGENTS.md"
   echo "   ➔ 同步全局 AGENTS.md 到 Codex (~/.codex/AGENTS.md)..."
 fi
 
-# 4. 创建全局命令行别名 `ai-brain` 方便日常使用
+if [ -f "${BRAIN_ROOT}/rules/CLAUDE.md" ]; then
+  mkdir -p "${HOME}/.claude"
+  cp "${BRAIN_ROOT}/rules/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
+  echo "   ➔ 同步全局 CLAUDE.md 到 Claude (~/.claude/CLAUDE.md)..."
+fi
+
+# 4. 创建全局命令行工具 `ai-brain` 与 `p12-docling`
 BIN_DIR="${HOME}/.local/bin"
 mkdir -p "${BIN_DIR}"
+
+if [ -f "${BRAIN_ROOT}/skills/docling-reader/scripts/p12_docling.py" ]; then
+  chmod +x "${BRAIN_ROOT}/skills/docling-reader/scripts/p12_docling.py"
+  ln -sf "${BRAIN_ROOT}/skills/docling-reader/scripts/p12_docling.py" "${BIN_DIR}/p12-docling"
+  echo "   ➔ 挂载全局异构文档净水引擎: ${BIN_DIR}/p12-docling"
+fi
+
 cat << 'CLI_EOF' > "${BIN_DIR}/ai-brain"
 #!/usr/bin/env bash
 BRAIN_PATH="${HOME}/Projects/my-ai-brain"
