@@ -1,6 +1,6 @@
 ---
 name: implement
-description: "Implement a piece of work based on a spec or set of tickets."
+description: "End-to-end code implementation workflow driving /tdd at pre-agreed seams, regular typechecking/test runs, and /code-review before commit. TRIGGER AUTOMATICALLY when implementing features, specs, issues, or coding tasks."
 ---
 
 Implement the work described by the user in the spec or tickets.

@@ -18,9 +18,9 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 > **当前目标**: [一句话描述] | **下一步驱动**: [主动引导下一步动作]
 ```
 
-- **SOP-1 (Bug 缺陷攻坚流)**: Triggered by "bug", "报错", "异常", "问题", "不工作", "崩溃". Immediately show `[■□□□□] 阶段 1/5: 捕获与工单建立`, track the issue, build a feedback loop, test hypotheses, fix via TDD, and verify. (Trivial style/text fixes auto-downgrade to Lite Mode 2 steps).
-- **SOP-2 (特性演进流)**: Triggered by "新需求", "新功能", "增加", "想做", "支持". Display `[■□□□□] 阶段 1/5: 需求倾听与边界盘问`, grill boundaries, model domain concepts into `CONTEXT.md`/ADRs, create spec in `docs/`, and implement.
-- **SOP-3 (架构治理流)**: Triggered by "架构", "重构", "code review", "走查", "膨胀". Display `[■□□□] 阶段 1/4: 明确审计范围与焦点`, audit bloat/depth, generate refactor spec, and perform dual-axis review.
+- **SOP-1 (Bug 缺陷攻坚流)**: Triggered by "bug", "报错", "异常", "问题", "不工作", "崩溃". Automatically load and follow `diagnosing-bugs` + `tdd` + `ponytail` (read their `SKILL.md` first). Immediately show `[■□□□□] 阶段 1/5: 捕获与工单建立`, track the issue, build a failing feedback loop before editing code, test hypotheses, fix via TDD at public seams, and verify. (Trivial style/text fixes auto-downgrade to Lite Mode 2 steps).
+- **SOP-2 (特性演进与编码流)**: Triggered by "新需求", "新功能", "写代码", "实现", "增加", "想做", "支持". Automatically load `grill-with-docs` (`grilling` + `domain-modeling`) when requirements are underspecified, and **ALWAYS automatically load `codebase-design` + `tdd` + `ponytail` before writing code**. Design deep modules at clean seams, implement via vertical TDD slices, and run `code-review` before delivery.
+- **SOP-3 (架构治理流)**: Triggered by "架构", "重构", "code review", "走查", "膨胀". Automatically load `codebase-design` + `ponytail-review` + `code-review`. Display `[■□□□] 阶段 1/4: 明确审计范围与焦点`, audit bloat/depth, generate refactor spec, and perform dual-axis review.
 
 ## Index-First 3-Tier Progressive Code Navigation (Mandatory)
 

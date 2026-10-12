@@ -54,11 +54,41 @@ cat << JSON_EOF > "${GEMINI_CONFIG_DIR}/skills.json"
 JSON_EOF
 echo "   ➔ 写入 Antigravity skills.json 声明配置..."
 
-# 3. 配置 Codex / Claude / DSH 全局规则 (AGENTS.md & CLAUDE.md)
+# 3. 配置 Antigravity (GEMINI.md) / Codex (AGENTS.md) / Claude (CLAUDE.md) 全局规则
 if [ -f "${BRAIN_ROOT}/rules/AGENTS.md" ]; then
   mkdir -p "${HOME}/.codex"
   cp "${BRAIN_ROOT}/rules/AGENTS.md" "${HOME}/.codex/AGENTS.md"
   echo "   ➔ 同步全局 AGENTS.md 到 Codex (~/.codex/AGENTS.md)..."
+
+  mkdir -p "${HOME}/.gemini"
+  python3 - "${HOME}/.gemini/GEMINI.md" "${BRAIN_ROOT}/rules/AGENTS.md" << 'PY_EOF'
+import os, re, sys
+
+gemini_path, agents_path = sys.argv[1], sys.argv[2]
+with open(agents_path, "r", encoding="utf-8") as f:
+    agents_content = f.read().strip()
+
+block = f"<!-- my-ai-brain:begin -->\n{agents_content}\n<!-- my-ai-brain:end -->\n"
+
+if os.path.exists(gemini_path):
+    with open(gemini_path, "r", encoding="utf-8") as f:
+        existing = f.read()
+    if "<!-- my-ai-brain:begin -->" in existing:
+        updated = re.sub(
+            r"<!-- my-ai-brain:begin -->.*?<!-- my-ai-brain:end -->\n?",
+            block,
+            existing,
+            flags=re.S
+        )
+    else:
+        updated = existing.rstrip() + "\n\n" + block
+else:
+    updated = block
+
+with open(gemini_path, "w", encoding="utf-8") as f:
+    f.write(updated)
+PY_EOF
+  echo "   ➔ 同步全局 SOP 与 Matt Pocock 自动路由规则到 Antigravity (~/.gemini/GEMINI.md)..."
 fi
 
 if [ -f "${BRAIN_ROOT}/rules/CLAUDE.md" ]; then

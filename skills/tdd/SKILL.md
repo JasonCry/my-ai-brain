@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
+description: Test-driven development (vertical tracer-bullet slices, red-green loop at pre-agreed public seams). TRIGGER AUTOMATICALLY whenever implementing new features, writing business logic, fixing bugs, or writing/updating tests.
 ---
 
 # Test-Driven Development

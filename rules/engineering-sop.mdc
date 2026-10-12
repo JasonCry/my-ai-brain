@@ -15,8 +15,8 @@ Always lead with the compact phase card:
 > **当前目标**: [一句话描述] | **下一步驱动**: [主动引导下一步动作]
 ```
 
-## SOP Mapping
-- **SOP-1 (Bug Fix)**: Capture & Issue -> Feedback Loop -> Hypotheses -> TDD -> Deploy.
-- **SOP-2 (Feature)**: Listen & Grill -> Domain/ADR -> Spec -> TDD Implement -> Deploy.
-- **SOP-3 (Review)**: Scope -> Audit bloat/depth -> Refactor Spec -> Dual-axis Review.
-- **Lite Mode**: Trivial text/style fixes use 2-step fast track.
+## SOP Mapping & Mandatory Skill Auto-Loading (MUST read `SKILL.md` before coding)
+- **SOP-1 (Bug Fix)**: Auto-load `diagnosing-bugs` + `tdd` + `ponytail`. Capture & Issue -> Feedback Loop -> Hypotheses -> TDD -> Deploy.
+- **SOP-2 (Feature & Coding)**: Auto-load `grill-with-docs` (when underspecified) and **ALWAYS auto-load `codebase-design` + `tdd` + `ponytail` before coding**. Listen & Grill -> Domain/ADR -> Spec -> TDD Implement -> `code-review` & Deploy.
+- **SOP-3 (Review & Refactor)**: Auto-load `codebase-design` + `ponytail-review` + `code-review`. Scope -> Audit bloat/depth -> Refactor Spec -> Dual-axis Review.
+- **Lite Mode**: Trivial text/style fixes use 2-step fast track with `ponytail`.
