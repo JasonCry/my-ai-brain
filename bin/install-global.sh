@@ -23,6 +23,8 @@ for target_dir in "${TARGET_SKILL_DIRS[@]}"; do
   mkdir -p "${target_dir}"
   tool_label="$(basename "$(dirname "${target_dir}")")/$(basename "${target_dir}")"
   echo "   ➔ 软链挂载 Skills 到 ${tool_label} (${target_dir})..."
+  # 自动清理已从 my-ai-brain/skills 移除的失效软链接（防止僵尸技能残留）
+  find "${target_dir}" -maxdepth 1 -type l ! -exec test -e {} \; -delete 2>/dev/null || true
   for skill in "${BRAIN_ROOT}/skills"/*; do
     if [ -d "${skill}" ]; then
       skill_name="$(basename "${skill}")"
