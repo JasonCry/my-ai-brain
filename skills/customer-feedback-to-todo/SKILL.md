@@ -1,6 +1,7 @@
 ---
 name: customer-feedback-to-todo
 description: Decompose raw user feedback or feature ideas into structured engineering tasks in todo.md.
+disable-model-invocation: true
 ---
 
 # 客户需求记录与待办拆解技能 (Customer Feedback to TODO Skill)

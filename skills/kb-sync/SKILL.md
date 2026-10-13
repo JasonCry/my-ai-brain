@@ -1,6 +1,7 @@
 ---
 name: kb-sync
 description: Pull or push SoftwareDevKnowledgeBase (engineering knowledge base and CBB assets) with GitHub.
+disable-model-invocation: true
 ---
 
 # 软件工程知识库与 CBB 资产同步与推送 (/kb-sync)

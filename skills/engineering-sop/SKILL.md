@@ -1,6 +1,7 @@
 ---
 name: engineering-sop
 description: Full reference for SOP-1 (Bug Fix), SOP-2 (Feature), SOP-3 (Architecture), and 2-Step Lite Mode.
+disable-model-invocation: true
 ---
 
 # 自动化工程标准作业程序 (Automated Engineering SOPs)

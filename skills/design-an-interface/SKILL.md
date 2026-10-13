@@ -1,6 +1,7 @@
 ---
 name: design-an-interface
 description: Generate and compare multiple distinct module interface designs ('design it twice') via subagents.
+disable-model-invocation: true
 ---
 
 # Design an Interface

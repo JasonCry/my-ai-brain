@@ -1,6 +1,7 @@
 ---
 name: ponytail-debt
 description: Harvest all `ponytail:` shortcut comments across the codebase into a tracked technical debt ledger.
+disable-model-invocation: true
 ---
 
 Every deliberate ponytail shortcut is marked with a `ponytail:` comment naming

@@ -5,6 +5,10 @@ All notable changes to the `my-ai-brain` project will be documented in this file
 ## [Unreleased]
 
 ### Added
+- refactor(skills): 全面同步 GitHub 最新版 `mattpocock/skills` (`49dd158`) 并重构为官方「常驻原语 + 显式编排」双层架构 (#450)
+  - 修复 `bin/sync-upstream.sh` 目录层级变更问题，精准拉取官方 `skills/engineering/*`（20 项，含新增的 `pr`、重构后的 `ask-matt` 与 `PHASE-BOUNDARIES.md`）及 `skills/productivity/*`（7 项），完整保留官方 `disable-model-invocation: true` 双层划分。
+  - 将 26 个编排器/命令型技能（16 个官方编排器 + 10 个自有管理技能）统一标记为 `disable-model-invocation: true`（0 System Prompt 常驻开销，通过 `/slash` 显式调用），常驻 `<skills>` 仅保留 26 个模型自触发原语（约 1,437 Tokens）。
+  - 从全局 `rules/AGENTS.md` 与 `rules/CLAUDE.md` 移除单仓专属的 `## Agent skills` (`docs/agents/*`) 硬编码指针，消除在非代码库工作区下的无效文件寻址。
 - perf(skills): L0 技能路由目录极简瘦身——压缩全量 YAML `description`、合并包装器技能、归档低频课程技能 (#449)
   - 将 `skills/*/SKILL.md` 的 YAML `description` 统一压缩为 `<= 106` 字符的一句话高信噪比触发短语，正文细节保留在 `SKILL.md` Body 中按需加载。
   - 将 `ai-brain-init/push/update/sync-upstream` 4 个包装器合并为单一 `ai-brain-sync`，将 `kb-push/sync` 合并为单一 `kb-sync`。

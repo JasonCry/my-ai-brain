@@ -1,6 +1,7 @@
 ---
 name: project-studio
 description: Multi-project governance, GitHub Projects v2 cockpit, VOC tracking, and CAPABILITIES.md scaffolding.
+disable-model-invocation: true
 ---
 
 # 独立开发者多项目统一工作台治理技能 (Project Studio Skill)

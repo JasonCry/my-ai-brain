@@ -1,6 +1,7 @@
 ---
 name: request-refactor-plan
 description: Interview the user to plan a safe, incremental refactor with tiny commits and file a GitHub issue.
+disable-model-invocation: true
 ---
 
 This skill will be invoked when the user wants to create a refactor request. You should go through the steps below. You may skip steps if you don't consider them necessary.

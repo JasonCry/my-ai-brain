@@ -1,6 +1,7 @@
 ---
 name: contribute-skill
 description: Author, test, and contribute new skills, SOPs, or rules to the my-ai-brain repository.
+disable-model-invocation: true
 ---
 
 # 贡献新技能与 SOP 工作流 (Contribute Skill & SOP Workflow)

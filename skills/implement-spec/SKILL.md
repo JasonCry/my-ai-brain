@@ -1,20 +1,40 @@
 ---
 name: implement-spec
-description: Execute a multi-slice technical specification (*_solution.md) via tracer-bullet slices and Staging checks.
+description: "Implement the result of /to-spec and /to-tickets in code."
+disable-model-invocation: true
 ---
 
-# Implement Spec (Multi-Slice Spec Execution)
+You have been provided a spec. This spec should have tickets associated with it, describing how to implement the spec.
 
-基于 `docs/<category>/<feature>_solution.md` 实施包含多个垂直切片（Vertical Slices）的复杂特性。
+The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
-## 执行步骤
+The goal is the entire spec implemented on a single **integration branch**, with every ticket resolved the way the issue tracker closes work.
 
-1. **解析契约与任务依赖图 (Task Graph)**：
-   - 读取 Spec 文件顶部的 YAML Frontmatter（`issue_id`, `affected_seams`, `verify_commands`）与第 3 节垂直示踪弹切片清单。
-2. **上下文指针通信 (Sparse Context Pointers)**：
-   - 若委派 Subagent 并行调研或实施子切片，仅传递文件路径与 `[LStart-LEnd]` 行号指针（通过 `./scripts/code_query.sh outline` 获取），所有调研中间笔记保存在项目 `docs/` 对应子目录或会话 `scratch/` 目录中（**严禁写往工作区外的 `/tmp` 或不可写目录**）。
-3. **逐切片 TDD 与秒级快检**：
-   - 每个垂直切片遵循 `Red -> Green -> Refactor` 循环，并在切片完成后立即运行 `./scripts/verify_fast.sh` 验证编译与静态分析零报错。
-4. **双轴审查与 Staging 预发闭环**：
-   - 所有切片合流后，启动 `/code-review` 双轴（Standards + Spec）并行审查，逐项勾选 Spec 中的 `Acceptance Criteria`。
-   - 执行 `./scripts/deploy_staging.sh` 在 `localhost:3020` 验证真实接口与控制台 0 错误，输出四维回执 `[代码已改] -> [单测/快检已过] -> [真实接口/Staging 3020已测] -> [生产待授权]`。
+The tickets are not a list of steps. They are a **task graph** with blocking relationships between them. This means there is always a **frontier** of tickets which are ready to be grabbed.
+
+Communication to and from subagents should be sparse. Communicate primarily through **context pointers**: to the spec, tickets, research notes, and previous commits. Don't duplicate information already available via pointers.
+
+**Implementer subagents** should be run in the background where possible for maximum concurrency.
+
+## Steps
+
+1. Read the spec and tickets to understand the task graph.
+
+2. (optional) Use an **exploration subagent** to conduct any exploration required by the tickets - relevant codebase files or external documentation. Ensure the exploration subagent can save files - it should save its markdown notes in a directory outside the repo, accessible by all future subagents. This lets **implementer subagents** focus on implementation rather than exploration.
+
+3. Create the integration branch. If the issue tracker closes work through PRs, or the user asks for one, open a draft PR after the first merge in step 5 (a branch with no commits ahead of main can't open one), marked as closing the spec and tickets.
+
+4. Use **implementer subagents** to implement each ticket, each in its own worktree on its own branch. Each implementer subagent:
+   - confirms its worktree is based on the integration branch before starting, and resets onto it if not;
+   - calls the Skill tool with `tdd` to build the ticket;
+   - merges the integration branch tip into its own branch before reporting done
+
+5. Once an **implementer subagent** completes, merge its work to the integration branch with a **merger subagent**.
+
+6. If this changes the **frontier** of available tickets, kick off more **implementer subagents** to work on the new tickets. This allows for maximum concurrency.
+
+7. Once all tickets are complete, call the Skill tool with `code-review` on the integration branch. Fix all issues raised by the code review in a single **implementer subagent**.
+
+8. If a draft PR exists, mark it ready for review. Otherwise, resolve each ticket the way the issue tracker closes work, and report the integration branch.
+
+9. Clean up all **implementer subagent** worktrees.

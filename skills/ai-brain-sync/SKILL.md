@@ -1,6 +1,7 @@
 ---
 name: ai-brain-sync
 description: Initialize, update, push, or sync upstream for my-ai-brain engineering assets and skills.
+disable-model-invocation: true
 ---
 
 # AI Brain Sync & Lifecycle Manager (/ai-brain-sync)

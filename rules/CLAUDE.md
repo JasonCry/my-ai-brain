@@ -2,31 +2,29 @@
 
 This repository follows strict standardized automated engineering SOPs and workflows. All AI agents (including Claude Code) MUST strictly adhere to the following protocols.
 
-## Core Reference (Single Source of Truth)
+## Two-Layer Skill Architecture (`mattpocock/skills` Alignment) & Elastic SOPs
 
-- **Automated SOPs**: See `docs/agents/engineering_sop.md`
-- **Issue Tracker**: See `docs/agents/issue-tracker.md`
-- **Triage Labels**: See `docs/agents/triage-labels.md`
-- **Domain Modeling & ADRs**: See `docs/agents/domain.md`
-
-## Automated SOP Interception Protocol (Mandatory for ALL interactions)
-
-Whenever the user mentions a bug/problem, a new feature/idea, or an architectural concern, you MUST automatically enter the corresponding SOP defined in `docs/agents/engineering_sop.md`, leading each response with the compact Phase Card:
+Whenever the user mentions a bug/problem, a new feature/idea, or an architectural concern, lead your response with the compact Phase Card:
 
 ```markdown
 > 📌 **[SOP 名称]** `[■■□□□] 阶段 X/Y: 阶段名称` | **关联工单**: `#ID` (若有)
 > **当前目标**: [一句话描述] | **下一步驱动**: [主动引导下一步动作]
 ```
 
-- **L1 Inline Core Disciplines (Always active without extra file reads)**:
+- **Layer 1 · Model-Invoked Primitives (Always active in `<skills>`, core discipline inlined)**:
   - `diagnosing-bugs`: Reproducible failing loop first -> falsifiable hypotheses -> minimal root-cause fix.
   - `tdd`: Red-Green-Refactor vertical tracer-bullet slices at public seams.
+  - `codebase-design`: Deep modules (small interface hiding complex implementation at clean seams), no pass-through layers.
+  - `domain-modeling`: Challenge fuzzy terms and maintain `GLOSSARY.md` / `CONTEXT.md` and `docs/adr/` inline.
   - `ponytail`: YAGNI, stdlib/native first, zero single-implementation abstractions.
-  - `codebase-design`: Deep modules (small interface hiding complex implementation), no pass-through layers.
-- **SOP-1 (Bug 缺陷攻坚流)**: Triggered by cross-module or non-trivial bugs. Show `[■□□□□] 阶段 1/5: 捕获与工单建立`, create GitHub Issue, build a failing feedback loop before editing code, verify hypotheses, fix via TDD, run `./scripts/verify_fast.sh` + `./scripts/deploy_staging.sh`, and output the 4-state receipt.
-- **Lite Mode (2-Step Fast Track)**: Triggered by text/style tweaks, static config updates, or **single-file localized fixes without cross-seam (`UI->Route->Storage->Table`) or DB schema changes**. Run in 2 compact steps (`[■□] 1/2` -> `[■■] 2/2`).
-- **SOP-2 (特性演进与编码流)**: Triggered by new features. Load L2 `SKILL.md` on-demand (`grill-with-docs` when requirements are underspecified, `codebase-design` when designing new module seams, `code-review` before delivery). Author structured spec from `docs/agents/SPEC.template.md` before implementation.
-- **SOP-3 (架构治理流)**: Triggered by architecture/refactor/review requests. Load `codebase-design` + `ponytail-review` + `code-review` on-demand.
+  - `code-review`: Two-axis review (Standards + Spec) via parallel subagents before delivery.
+- **Layer 2 · User-Invoked `/slash` Orchestrators (`disable-model-invocation: true`, 0 System Prompt tokens)**:
+  - Main flow: `/grill-with-docs` -> `/to-spec` -> `/to-tickets` -> `/implement` (or `/implement-spec`) -> `/retro`.
+  - On-ramps & upkeep: `/triage`, `/wayfinder`, `/improve-codebase-architecture`, `/setup-matt-pocock-skills`, `/ask-matt`.
+- **Elastic Daily SOPs**:
+  - **Lite Mode (2-Step Fast Track)**: Text/style tweaks, static config updates, or **single-file localized fixes without cross-seam (`UI->Route->Storage->Table`) or DB schema changes** (`[■□] 1/2` -> `[■■] 2/2`).
+  - **SOP-1 (Bug Fix - 5 Steps)**: Create GitHub Issue -> failing feedback loop (`diagnosing-bugs`) -> hypothesis test -> TDD fix -> `./scripts/verify_fast.sh` + `./scripts/deploy_staging.sh` -> 4-state receipt.
+  - **SOP-2 / SOP-3 (Feature & Architecture)**: Guide or follow `/grill-with-docs` -> `/to-spec` -> `/to-tickets` -> `/implement` (or `/improve-codebase-architecture`).
 
 ## Index-First 3-Tier Progressive Code Navigation & Shift-Left Verification (Mandatory)
 

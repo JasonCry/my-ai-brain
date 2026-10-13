@@ -22,28 +22,26 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 > **当前目标**: [一句话描述当前目标] | **下一步驱动**: [主动引导用户进入下一步动作]
 ```
 
-### SOP Routing Matrix & L1/L2 Progressive Skill Discipline:
-采用 **L1 内联纪律（0 工具调用开销）+ L2 深度技能按需加载（`view_file` 读取 `SKILL.md`）** 双层机制，消除日常任务每轮固定读取多个 `SKILL.md` 的仪式税：
-- **L1 内联核心纪律（所有任务默认强制生效，无需重复调用 `view_file`）**：
-  - **`diagnosing-bugs` (L1)**：先构建必红最小复现闭环（单测/curl/探针）→ 提出可证伪假设并验证根因 → 严禁无复现盲改代码。
-  - **`tdd` (L1)**：在公共接缝（Seam）处按 `Red -> Green -> Refactor` 垂直示踪弹切片推进，禁止测试内部私有实现细节。
-  - **`ponytail` (L1)**：YAGNI 极简优先，优先用标准库/平台原生能力，拒绝单一实现的抽象层与防御性冗余代码。
-  - **`codebase-design` (L1)**：设计深模块（小接口隐藏复杂实现），严禁透传浅模块（Pass-through）。
-- **L2 深度技能按需加载（仅在跨模块架构设计、需求边界模糊或执行双轴审查时调用 `view_file` 读取对应 `SKILL.md`）**：
-  - **SOP-1 (Bug 缺陷攻坚流 - 5步)**: 遇到跨模块或根因不明的 "bug", "报错", "异常", "崩溃", "数据不对"。
-    - **动作**: 输出 `[■□□□□] 阶段 1/5: 捕获与工单建立` → `gh issue create` 并登记 `changelog.md` → 阶段 2 必红复现闭环 → 阶段 3 假设验证（复杂疑难时 `view_file` 读 `diagnosing-bugs`）→ 阶段 4 TDD 极简修复 → 阶段 5 先跑 `./scripts/verify_fast.sh` 再跑 `./scripts/deploy_staging.sh`，输出 `[代码已改] -> [单测已过] -> [真实接口/Staging已测] -> [生产待授权]` 四维回执。
-  - **Lite Mode (轻量极简通道 - 2步)**: 适用于**纯文案/样式微调、静态配置修正，或单文件内明确局部修复（不涉及跨前后端接缝 `UI->Route->Storage->Table` 及数据库 Schema 变更）**。
-    - **动作**: 自动降级为 2 步（`[■□] 阶段 1/2: 极简建单与定位` -> `[■■] 阶段 2/2: 最小修改与快速验证`），直接遵循 L1 `ponytail` 纪律修改并验证，免除多轮 `SKILL.md` 读取。
-  - **SOP-2 (特性演进与日常编码流 - 5步)**: 遇到跨模块 "新需求", "新功能", "实现", "支持" 等。
-    - **按需加载 L2 技能**: 需求未清时读取 `grill-with-docs`；设计新模块/新接口接缝时读取 `codebase-design`；交付前双轴自检读取 `code-review`。
-    - **动作**: 阶段 1 边界盘问 → 阶段 2 领域建模 (`CONTEXT.md`/ADR) → 阶段 3 基于 `docs/agents/SPEC.template.md` 编写结构化 Spec → 阶段 4 TDD 垂直切片实施 → 阶段 5 `verify_fast.sh` + Staging 验证与四维回执。
-  - **SOP-3 (架构治理流 - 4步)**: 遇到 "架构", "重构", "code review", "走查", "代码膨胀" 等。
-    - **按需加载 L2 技能**: 读取 `codebase-design` + `ponytail-review` + `code-review`。
-    - **动作**: 输出 `[■□□□] 阶段 1/4: 明确审计范围与焦点`，查冗余与深浅，写方案 Spec，并做双轴审查。
+### 双层技能架构（对齐 `mattpocock/skills` 官方 `SKILL-MECHANICS.md`）与三级弹性 SOP
+采用 **「常驻模型自触发原语（Model-invoked Primitives）+ 零常驻人类显式编排器（User-invoked `/slash` Orchestrators）」** 双层正交机制：
+- **第 1 层 · 常驻模型自触发原语（L1 内联 + 按需读取 `SKILL.md`）**：
+  - **`diagnosing-bugs`**：先构建必红最小复现闭环（单测/curl/探针）→ 提出可证伪假设并验证根因 → 严禁无复现盲改代码。
+  - **`tdd`**：在公共接缝（Seam）处按 `Red -> Green -> Refactor` 垂直示踪弹切片推进，禁止测试内部私有实现细节。
+  - **`codebase-design`**：设计深模块（小接口隐藏复杂实现，置于清晰 Seam 处），严禁透传浅模块（Pass-through）。
+  - **`domain-modeling`**：主动打磨领域模型与统一语言（维护项目根 `GLOSSARY.md` / `CONTEXT.md` 及 `docs/adr/`）。
+  - **`ponytail`**：YAGNI 极简优先，优先用标准库/平台原生能力，拒绝单一实现的抽象层与防御性冗余代码。
+  - **`code-review`**：交付前执行 Standards（编码规范与坏味道）+ Spec（需求契约一致性）双轴并行审查。
+- **第 2 层 · 人类显式编排器（`disable-model-invocation: true`，0 常驻 Token，由用户按需输入 `/command` 驱动）**：
+  - **主干流（Idea → Ship）**：`/grill-with-docs`（设计树边界盘问 + 沉淀 `GLOSSARY.md`/ADR）→ `/to-spec`（合成为结构化 Spec）→ `/to-tickets`（拆解带阻塞边的垂直切片工单）→ `/implement`（单工单 TDD + 双轴审查）或 `/implement-spec`（全 Spec 并发子 Agent 实施）→ `/retro`（复盘并加固工程环境）。
+  - **支线与治理入口**：`/triage`（存量工单分诊状态机）、`/wayfinder`（跨多会话大型模糊战役地图）、`/improve-codebase-architecture`（扫描浅模块并生成加深重构 HTML 报告）、`/setup-matt-pocock-skills`（单仓首次初始化 `docs/agents/*`）、`/ask-matt`（不确定用哪个技能时的总路由表）。
+- **日常对话三级弹性 SOP 路由**：
+  - **Lite Mode (2步极简通道)**：纯文案/样式微调、静态配置修正，或**单文件内明确局部修复（无跨接缝 `UI->Route->Storage->Table` 及 Schema 变更）**，按 `[■□] 阶段 1/2: 极简建单与定位` -> `[■■] 阶段 2/2: 最小修改与快速验证` 闭环。
+  - **SOP-1 (Bug 缺陷攻坚 - 5步)**：跨模块或根因不明 Bug → `gh issue create` 登记 `changelog.md` → 必红复现闭环（`diagnosing-bugs`）→ 假设验证 → TDD 修复 → `./scripts/verify_fast.sh` + `./scripts/deploy_staging.sh` 并输出 `[代码已改] -> [单测已过] -> [真实接口/Staging已测] -> [生产待授权]` 四维回执。
+  - **SOP-2 / SOP-3 (特性演进与架构治理)**：日常特性遵循原语闭环；跨模块复杂特性或架构重构，主动提示或配合用户使用 `/grill-with-docs` → `/to-spec` → `/to-tickets` → `/implement`（或 `/improve-codebase-architecture`）推进。
 
 ## 🗺️ Index-First 三层渐进式代码定位与左移验证协议 (Mandatory · 严禁盲目全局 Grep)
 
-在排查 Bug 或开发新功能时，**严禁一上来就执行无范围的全局 `grep` 或整篇读取上千行的大文件**，必须严格执行以下渐进式协议：
+在包含代码索引脚本的代码仓库中排查 Bug 或开发新功能时，**严禁一上来就执行无范围的全局 `grep` 或整篇读取上千行的大文件**，必须严格执行以下渐进式协议：
 1. **Step 1 · 宏观锁域 (L0, ~300 Tokens)**：优先读取 `llms.txt` 或执行 `./scripts/code_query.sh feature <关键词>` 检索 `docs/CAPABILITIES.md`，锁定目标功能所属的前端视图与后端路由文件名。
 2. **Step 2 · 中观溯源 (L1, ~150 Tokens)**：调用 `./scripts/code_query.sh trace <API或模块名>`（检索 `docs/ARCHITECTURE_SEAMS.json`），一步获取 `UI -> Route -> Storage -> Table` 端到端文件接缝。
 3. **Step 3 · 微观定行 (L2, ~100 Tokens)**：针对目标文件执行 `./scripts/code_query.sh outline <文件路径>`（或 `./scripts/code_query.sh symbol <函数名/类名>`），毫秒级获取文件内函数签名与**精确起止行号 (`LStart-LEnd`)**。
@@ -55,16 +53,3 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 1. **零提醒自动拦截**：**严禁等待用户提醒“用 docling”**，且**严禁**直接使用 `pypdf`、`pdfplumber`、`pdftotext` 提取残缺文本；必须无条件自动调用 `~/.local/bin/p12-docling --input "<file_path>"`。
 2. **原件原位保护与缓存直读**：严禁移动或重命名用户的原始文档；直接读取命令 JSON 回执中的 `parsed_md_path`（指向 `.docling_cache/<sha256>/parsed.md`，二次读取 0ms 秒回）。
 
-## Agent skills
-
-### Issue tracker
-GitHub Issues via `gh` CLI. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-Canonical five-role vocabulary. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-Single-context (`CONTEXT.md` + `docs/adr/` at repo root). See `docs/agents/domain.md`.
-
-### Automated Engineering SOPs Reference
-Full specification: see `docs/agents/engineering_sop.md`.
