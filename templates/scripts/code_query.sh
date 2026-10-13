@@ -18,6 +18,8 @@ QUERY="${2:-}"
 show_help() {
     cat << 'EOF'
 用法 (3-Tier Progressive Code Navigation):
+  🚀 复合穿透 (首选 · 单次交互省 2 轮 Tool 往返):
+     ./scripts/code_query.sh locate <keyword>         # 穿透检索 Seam 接缝并直接输出核心文件 Outline 与 [LStart-LEnd] 切片行号
   1. 宏观锁域 (L0):
      ./scripts/code_query.sh feature <keyword>        # 检索 llms.txt 与 docs/CAPABILITIES.md 锁定模块文件
   2. 中观溯源 (L1):
@@ -29,6 +31,7 @@ show_help() {
      ./scripts/code_query.sh symbol <symbol_name>     # 跨文件精准定位函数/结构体/组件定义所在的文件与起止行号
 
 示例:
+  ./scripts/code_query.sh locate task
   ./scripts/code_query.sh feature "日程"
   ./scripts/code_query.sh trace /api/tasks
   ./scripts/code_query.sh outline backend/src/routes/tasks.rs
@@ -37,6 +40,114 @@ EOF
 }
 
 case "$CMD" in
+    locate|find)
+        if [ -z "$QUERY" ]; then
+            echo "❌ 请指定要定位的功能、模块或关键词，如: ./scripts/code_query.sh locate task"
+            exit 1
+        fi
+        echo "🚀 [L0~L2 一键穿透定位] 关键词: '${QUERY}' (Project: $(basename "$PROJECT_ROOT"))"
+        python3 - "$PROJECT_ROOT" "$QUERY" << 'PYEOF'
+import sys, os, json, re
+
+project_root = sys.argv[1]
+query = sys.argv[2].lower()
+
+seams_file = os.path.join(project_root, "docs", "ARCHITECTURE_SEAMS.json")
+matched_files = set()
+
+# 1. 优先匹配 ARCHITECTURE_SEAMS.json
+if os.path.exists(seams_file):
+    try:
+        with open(seams_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        for s in data.get("seams", []):
+            match_txt = f"{s.get('feature','')} {s.get('api_endpoint','')} {s.get('backend_route','')} {s.get('frontend_view','')}".lower()
+            if query in match_txt:
+                print(f"🔗 [Seam 匹配] {s.get('feature')}")
+                print(f"   API:      {s.get('api_endpoint', 'N/A')}")
+                print(f"   Route:    {s.get('backend_route', 'N/A')}")
+                print(f"   View:     {s.get('frontend_view', 'N/A')}")
+                print(f"   Table:    {s.get('database_table', 'N/A')}")
+                if s.get('backend_route'):
+                    matched_files.add(s.get('backend_route'))
+                if s.get('frontend_view'):
+                    matched_files.add(s.get('frontend_view'))
+    except Exception:
+        pass
+
+# 2. 若未匹配到，或文件较少，执行快速路径/文件名探针
+if len(matched_files) < 2:
+    skip_dirs = {'.git', 'node_modules', 'target', 'build', '.dart_tool', 'dist', 'dist_guoxue', '.next', 'vendor', '.docling_cache'}
+    valid_exts = {'.rs', '.dart', '.ts', '.tsx', '.js', '.vue', '.py', '.go'}
+    for root, dirs, files in os.walk(project_root):
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
+        for fn in files:
+            ext = os.path.splitext(fn)[1].lower()
+            if ext not in valid_exts:
+                continue
+            full = os.path.join(root, fn)
+            rel = os.path.relpath(full, project_root)
+            if query in fn.lower() or query in rel.lower():
+                matched_files.add(rel)
+                if len(matched_files) >= 3:
+                    break
+        if len(matched_files) >= 3:
+            break
+
+# 3. 对匹配到的核心文件，直接内联提取 outline 声明与行号切片
+if matched_files:
+    print("\n📐 [核心接缝 Outline & 行号切片预览]:")
+    decl_patterns = [
+        (r'^\s*(pub(\([^)]+\))?\s+)?(async\s+)?fn\s+([a-zA-Z0-9_]+)', 'fn'),
+        (r'^\s*(pub(\([^)]+\))?\s+)?(struct|enum|trait|type)\s+([a-zA-Z0-9_]+)', 'type'),
+        (r'^\s*impl(<[^>]*>)?\s+([a-zA-Z0-9_:<>\s]+)', 'impl'),
+        (r'^\s*(abstract\s+)?(class|mixin|enum|extension|interface|type)\s+([a-zA-Z0-9_<>]+)', 'class'),
+        (r'^\s*(Future<[^>]+>|Stream<[^>]+>|Widget|void|bool|int|double|String|dynamic|final\s+[a-zA-Z0-9_<>]+)\s+([a-zA-Z0-9_]+)\s*\(', 'method'),
+        (r'^(\s*)(async\s+)?def\s+([a-zA-Z0-9_]+)\s*\(', 'def'),
+    ]
+    for rel_path in sorted(list(matched_files))[:3]:
+        full_path = os.path.join(project_root, rel_path)
+        if not os.path.isfile(full_path):
+            continue
+        try:
+            with open(full_path, 'r', encoding='utf-8', errors='replace') as f:
+                lines = f.readlines()
+        except Exception:
+            continue
+        print(f"\n  📄 {rel_path} (共 {len(lines)} 行)")
+        printed = 0
+        for idx, line in enumerate(lines):
+            for pat, kind in decl_patterns:
+                if re.search(pat, line):
+                    sig = line.strip()
+                    if sig.endswith('{'): sig = sig[:-1].strip()
+                    if len(sig) > 85: sig = sig[:82] + '...'
+                    end_idx = min(idx + 30, len(lines))
+                    depth = 0; found_brace = False
+                    for j in range(idx, min(len(lines), idx + 200)):
+                        clean = re.sub(r'//.*$', '', lines[j])
+                        for ch in clean:
+                            if ch == '{': depth += 1; found_brace = True
+                            elif ch == '}':
+                                depth -= 1
+                                if found_brace and depth <= 0:
+                                    end_idx = j + 1
+                                    break
+                        if found_brace and depth <= 0:
+                            break
+                    loc = f"L{idx+1}-L{end_idx}" if end_idx > idx + 1 else f"L{idx+1}"
+                    print(f"    {loc:<11} [{kind:<6}] {sig}")
+                    printed += 1
+                    break
+            if printed >= 8:
+                print(f"    ... 更多符号请执行: ./scripts/code_query.sh outline {rel_path}")
+                break
+    print("\n💡 提示: 现可直接针对上述行号调用 view_file(StartLine, EndLine) 进行切片读写！")
+else:
+    print(f"⚠️ 未找到与 '{query}' 直接相关的接缝或核心代码文件。建议运行 ./scripts/code_query.sh feature 检索业务文档。")
+PYEOF
+        ;;
+
     feature)
         if [ -z "$QUERY" ]; then
             echo "❌ 请指定功能关键词，如: ./scripts/code_query.sh feature 日历"

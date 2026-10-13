@@ -1,5 +1,6 @@
 ---
 name: ppt-master
+disable-model-invocation: true
 description: Convert documents or topics into high-quality multi-page SVG slides and export to PPTX.
 ---
 

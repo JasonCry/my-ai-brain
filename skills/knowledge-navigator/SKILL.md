@@ -1,5 +1,6 @@
 ---
 name: knowledge-navigator
+disable-model-invocation: true
 description: Retrieve L1 Executive Cards and taboos from SoftwareDevKnowledgeBase (00_OPAC_CATALOG.json).
 ---
 

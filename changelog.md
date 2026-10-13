@@ -5,6 +5,13 @@ All notable changes to the `my-ai-brain` project will be documented in this file
 ## [Unreleased]
 
 ### Added
+- perf(governance): 深度优化代码研发场景 Token 消耗、规则去重与一键穿透探针 (#8)
+  - 剥离非研发技能常驻开销：将 `feynman-tutor`、`ppt-master`、`obsidian-vault`、`wizard`、`knowledge-distillation`、`knowledge-navigator`、`taste-skill`、`writing-for-agents`、`mini-deploy`（以及单机 `gtd-secretary`、`p12-memoryos`）11 项非核心技能打上 `disable-model-invocation: true`，转为 L2 显式 `/slash` 按需调用，使 System Prompt `<skills>` 目录开销从 40 项骤降至 15 项核心原语（净省 ~1,000+ Tokens）。
+  - 项目规则去重与正交瘦身：重构 `bin/init-project.sh` 项目级 `AGENTS.md` 模板，剔除与全局 `GEMINI.md` 完全重复的 `Index-First` 4步大段文本，收敛为轻量本地架构指针，消除每轮对话重复注入 ~300 Tokens。
+  - 消除规则互搏与思考税：在 `rules/AGENTS.md`、`rules/CLAUDE.md` 与 `sop/engineering_sop.md` 中明确规约 Lite Mode 显式豁免 `gh issue create` 与机械多轮阶段卡，升级 `commit-msg` 钩子允许 `chore(lite):` 快速放行，根治模型在微小任务下的分类犹豫与思考税。
+  - 探针复合穿透升级：在 `templates/scripts/code_query.sh` 中新增 `locate <关键词>` 一键穿透指令，单次命令直接解析 Seam 接缝并内联展示核心文件 Outline 与 `[LStart-LEnd]` 切片起止行号，单次交互节约 2 轮 Tool 往返报文（~1,500 Tokens）。
+  - 执行 `bin/install-global.sh` 全局刷新生效，并将 `feynman-tutor` 归一化为纯净文件目录追踪。
+
 - feat(sop): 对齐 `mattpocock/skills` 官方全闭环机制与四大场景 SOP 健壮性升级 (#7)
   - 修复 `ponytail`、`ponytail-audit`、`ponytail-debt` 的 YAML Frontmatter 解析冒号错误，确保 `ponytail` 核心原语在 Antigravity `<skills>` 正常加载。
   - 统一领域语言文档为 `GLOSSARY.md` / `GLOSSARY-MAP.md`（向下兼容 `CONTEXT.md`），消解 `domain.md`、`domain-modeling` 与各 SOP 间的读写契约冲突。

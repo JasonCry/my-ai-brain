@@ -17,8 +17,8 @@ fi
 
 MSG_CONTENT="$(cat "$COMMIT_MSG_FILE")"
 
-# 允许 Merge、Revert 或自动版本发布提交直接通过
-if echo "$MSG_CONTENT" | grep -Eq '^(Merge |Revert |chore\(release\):|release:)'; then
+# 允许 Merge、Revert、自动版本发布或 Lite Mode 极简提交直接通过
+if echo "$MSG_CONTENT" | grep -Eq '^(Merge |Revert |chore\(release\):|chore\(lite\):|release:)'; then
     exit 0
 fi
 

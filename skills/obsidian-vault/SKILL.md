@@ -1,5 +1,6 @@
 ---
 name: obsidian-vault
+disable-model-invocation: true
 description: Search, create, and organize notes in the Obsidian vault using wikilinks and index notes.
 ---
 

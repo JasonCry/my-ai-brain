@@ -1,5 +1,6 @@
 ---
 name: mini-deploy
+disable-model-invocation: true
 description: Zero-compilation production hot-reload deployment and health check for Mac Mini (P12 / WuDangShuYuan).
 ---
 

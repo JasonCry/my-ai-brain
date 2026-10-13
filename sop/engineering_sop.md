@@ -19,17 +19,19 @@
 
 ---
 
-## ⚡ 轻量通道 (Lite Mode: 2-Step Fast Track)
+## ⚡ 轻量通道 (Lite Mode: 2-Step Fast Track · 零流程包袱)
 
-**判定标准**：纯文案勘误、单个样式微调、静态配置修正，或**单文件内明确的局部逻辑修复（不涉及跨前后端接缝 `UI -> Route -> Storage -> Table` 契约修改、不涉及数据库 Schema 迁移）**。
+**判定标准**：纯文案勘误、单个样式微调、静态配置修正、规则优化，或**单文件内明确的局部逻辑修复（不涉及跨前后端接缝 `UI -> Route -> Storage -> Table` 契约修改、不涉及数据库 Schema 迁移）**。
 
-* **阶段 1/2 [■□]: 极简建单与切片定位**
-  - 执行 `gh issue create` 建立工单并在 `changelog.md` 登记（若仓库无远端 GitHub Tracker 则登记于本地 `todo.md`/`changelog.md`）。
-  - 利用 L0~L2 代码导航探针（`./scripts/code_query.sh`）直接定位目标文件与精确行号 `[LStart-LEnd]`，免除多轮 `SKILL.md` 读取开销。
+* **豁免机制**：
+  - **显式豁免 `gh issue create`**：轻量修复直接走本地快速闭环，无需专门在 GitHub 建单（允许直接以 `fix:` 或 `chore:` 提交并在 `changelog.md` 记录）；
+  - **豁免多轮机械阶段卡**：首轮或结束时给出一句话进度即可，避免多轮问答反复输出阶段卡带来的 Token 浪费与思考税。
+* **阶段 1/2 [■□]: 极速定位**
+  - 利用复合穿透探针（`./scripts/code_query.sh locate <关键词>` 或 `outline`）一步锁定目标文件与精确行号 `[LStart-LEnd]`。
 * **阶段 2/2 [■■]: 最小修改与快速验证闭环**
-  - 遵循 L1 `ponytail` 纪律执行最小修改。
+  - 遵循 L1 `ponytail` 纪律执行最小修改，严禁防御性代码与过度设计。
   - 先运行 `./scripts/verify_fast.sh` 完成秒级编译/静态检查；若项目包含预发脚本（如 `./scripts/deploy_staging.sh`）则完成预发内循环验证（不改版本号、不触碰生产）。
-  - Git Commit 携带 `#<Issue_ID>`，验证通过后执行 `gh issue close <ID>` 关闭工单。
+  - 在 `changelog.md` 记录改动，完成提交。
 
 ---
 

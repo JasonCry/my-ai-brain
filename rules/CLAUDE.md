@@ -23,7 +23,7 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
   - **Main flow (`Idea -> Ship`)**: `/grill-with-docs` (or `/prototype` detour) -> `/to-spec` -> single-session `/implement` OR multi-session `/to-tickets` -> `/implement` (or `/implement-spec`) -> `/retro`.
   - **On-ramps & upkeep**: `/triage`, `/wayfinder` (fog-of-war decision map merging into `/to-spec`), `/improve-codebase-architecture`, `/setup-matt-pocock-skills`, `/ask-matt`.
 - **Elastic Daily SOPs (`docs/agents/engineering_sop.md`)**:
-  - **Lite Mode (2-Step Fast Track)**: Text/style tweaks, static config updates, or **single-file localized fixes without cross-seam (`UI->Route->Storage->Table`) or DB schema changes** (`[■□] 1/2` -> `[■■] 2/2`).
+  - **Lite Mode (2-Step Fast Track · Zero Overhead)**: Text/style tweaks, static config updates, or **single-file localized fixes without cross-seam changes**. **Explicitly exempt from `gh issue create`** and multi-turn phase cards; do minimal edit and verify via `./scripts/verify_fast.sh`.
   - **SOP-1 (Bug Fix - 5 Steps)**: Create GitHub Issue -> failing feedback loop (`diagnosing-bugs`) -> hypothesis test -> TDD fix -> `./scripts/verify_fast.sh` + staging check -> 4-state receipt (optional `/retro`).
   - **SOP-2 (Feature Evolution - 4 Steps)**: (`[■□□□] 1/4: /grill-with-docs` -> `[■■□□] 2/4: /to-spec & single/multi-session split` -> `[■■■□] 3/4: TDD /implement` -> `[■■■■] 4/4: /code-review & Staging receipt`).
   - **SOP-3A / SOP-3B (Code Review & Architecture)**: **SOP-3A (2 Steps)** for branch/PR review (`/code-review` + `/ponytail-review`); **SOP-3B (4 Steps)** for architecture deepening (`/improve-codebase-architecture` HTML report -> `/grill-with-docs` -> vertical slices or `Expand-Contract` for wide refactors -> TDD & review).
@@ -31,9 +31,9 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 ## Index-First 3-Tier Progressive Code Navigation & Shift-Left Verification (Mandatory)
 
 NEVER start by running blind repo-wide `grep` or reading entire large files. Always follow the 3-tier funnel:
-1. **L0 Macro**: Read `llms.txt` or run `./scripts/code_query.sh feature <keyword>` (`docs/CAPABILITIES.md`).
-2. **L1 Meso**: Run `./scripts/code_query.sh trace <api_or_module>` to inspect end-to-end seams (`docs/ARCHITECTURE_SEAMS.json`).
-3. **L2 Micro & Fast Check**: Run `./scripts/code_query.sh outline <file_path>` or `./scripts/code_query.sh symbol <name>` to get exact `[LStart-LEnd]` line numbers, slice-read/edit only those lines, and run `./scripts/verify_fast.sh` for instant compile/lint feedback before full staging builds.
+0. **Step 0 Compound Penetration (Preferred)**: Run `./scripts/code_query.sh locate <keyword>` to inspect seams and core file outlines with exact `[LStart-LEnd]` line numbers in a single tool call (saves 2 tool round-trips).
+1. **L0 Macro & L1 Meso (Fallback)**: Run `./scripts/code_query.sh feature <keyword>` or `trace <api_or_module>`.
+2. **L2 Micro & Fast Check**: Run `./scripts/code_query.sh outline <file_path>` or `./scripts/code_query.sh symbol <name>` to get exact `[LStart-LEnd]` line numbers, slice-read/edit only those lines, and run `./scripts/verify_fast.sh` for instant compile/lint feedback.
 
 ## Zero-Prompt Docling Document Reading Gate (Mandatory)
 

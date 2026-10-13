@@ -1,5 +1,6 @@
 ---
 name: knowledge-distillation
+disable-model-invocation: true
 description: Distill engineering practices and reusable CBB modules into SoftwareDevKnowledgeBase (Siku-Quanshu OPAC).
 ---
 

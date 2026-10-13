@@ -39,18 +39,16 @@ import os, re, sys
 target_path = sys.argv[1]
 
 block = """<!-- my-ai-brain:begin -->
-## 🧠 Project-Level AI Brain Index & References (Orthogonal to Global Rules)
+## 🧠 Project AI Context & Local Index (Orthogonal to Global Rules)
 
-> 全局通用规则（沟通契约、SOP 1~3 阶段卡与 L1/L2 渐进式技能纪律、Docling 门禁）已由本机全局配置（`~/.gemini/GEMINI.md`、`~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`）统一注入，此处不再重复拷贝。
+> 全局通用规则（沟通契约、SOP 弹性路由、L1/L2 技能纪律、Docling 门禁）已由全局配置统一注入。本项目仅维护本地索引指针：
 
-- **Index-First 三层代码定位与左移快检（严禁全仓盲目 `grep`）**：
-  1. **L0 宏观锁域**：读取 `llms.txt` 或执行 `./scripts/code_query.sh feature <关键词>`（检索 `docs/CAPABILITIES.md`）。
-  2. **L1 中观溯源**：执行 `./scripts/code_query.sh trace <API或模块名>`（检索 `docs/ARCHITECTURE_SEAMS.json`）。
-  3. **L2 微观定行**：执行 `./scripts/code_query.sh outline <文件>` 或 `./scripts/code_query.sh symbol <符号>` 获取 `[LStart-LEnd]`，再用 `view_file` 按行切片读写。
-  4. **Shift-Left 秒级快检**：在重型构建前优先运行 `./scripts/verify_fast.sh` 完成增量编译与静态检查。
-- **Automated Engineering SOPs & Spec Template**:
-  - **SOP Reference**: `docs/agents/engineering_sop.md`
-  - **Structured Spec Template**: `docs/agents/SPEC.template.md`
+- **Local Seams & Code Query**:
+  - 探针工具: `./scripts/code_query.sh` (首选 `locate <kw>` 一键穿透 Seam 与 Outline 切片，或 `feature`/`trace`/`outline`)
+  - 架构接缝: `docs/ARCHITECTURE_SEAMS.json`
+  - 领域地图: `docs/CAPABILITIES.md` 与 `llms.txt`
+  - 左移快检: `./scripts/verify_fast.sh`
+- **SOP 契约模板**: `docs/agents/SPEC.template.md` (完整规范详见 `docs/agents/engineering_sop.md`)
 
 ## Agent skills
 

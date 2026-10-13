@@ -1,5 +1,6 @@
 ---
 name: taste-skill
+disable-model-invocation: true
 description: High-taste, anti-slop frontend UI/UX design and redesign with strict pre-flight checks.
 ---
 
