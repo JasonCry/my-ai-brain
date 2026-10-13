@@ -1,6 +1,6 @@
 ---
 name: ponytail-audit
-description: Whole-repo audit for over-engineering: ranked list of bloat and abstractions to delete or simplify.
+description: "Whole-repo audit for over-engineering: ranked list of bloat and abstractions to delete or simplify."
 disable-model-invocation: true
 ---
 

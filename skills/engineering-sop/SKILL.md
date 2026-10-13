@@ -1,142 +1,19 @@
 ---
 name: engineering-sop
-description: Full reference for SOP-1 (Bug Fix), SOP-2 (Feature), SOP-3 (Architecture), and 2-Step Lite Mode.
+description: "Full reference for Lite Mode, SOP-1 (Bug Fix), SOP-2 (Feature Idea->Ship), and SOP-3A/3B (Code Review & Architecture Deepening), aligned with mattpocock/skills."
 disable-model-invocation: true
 ---
 
-# 自动化工程标准作业程序 (Automated Engineering SOPs)
+# 自动化工程标准作业程序 (Automated Engineering SOPs · Aligned with `mattpocock/skills`)
 
-本技能定义日常工程研发中的三大标准作业程序（SOP）与极简通道。当在任何工程中感知到对应意图时，Agent 自动启动对应 SOP，并在关键节点输出**「紧凑阶段进度卡片」**驱动开发。
+本技能为 `sop/engineering_sop.md` 的同步镜像参考，全面对齐 `mattpocock/skills` 官方研发闭环（`Idea -> Grill -> Spec -> Tickets -> TDD Implement -> Two-Axis Code Review -> Retro`）。
 
----
+- **单一真源路径**：`~/Projects/my-ai-brain/sop/engineering_sop.md`（在已初始化的项目中同步位于 `docs/agents/engineering_sop.md`）。
+- **核心路由矩阵**：
+  1. **Lite Mode (2步极简通道)**：纯文案/样式微调、静态配置修正，或单文件内明确局部修复（不涉及跨前后端接缝 `UI->Route->Storage->Table` 或 Schema 变更）。
+  2. **SOP-1 (Bug 缺陷攻坚 - 5步)**：建单 (`gh issue create`) -> 必红最小复现闭环 (`diagnosing-bugs`) -> 可证伪假设验证 -> TDD 极简修复 (`tdd` + `ponytail`) -> `./scripts/verify_fast.sh` + 预发四维回执 + 可选 `/retro`。
+  3. **SOP-2 (新功能与特性演进 - 4步)**：（超大模糊工程先走 `/wayfinder`）-> 阶段 1 `/grill-with-docs`（盘问边界 + 实时更新 `GLOSSARY.md` 与 `docs/adr/`，必要时 `/prototype`）-> 阶段 2 `/to-spec`（单会话直接进入阶段 3；多会话走 `/to-tickets` 拆解带阻塞边的垂直切片）-> 阶段 3 `/implement` 或 `/implement-spec`（在公共 Seam 处 `Red->Green->Refactor`）-> 阶段 4 `/code-review` 双轴审查 + 预发四维回执 + `/retro`。
+  4. **SOP-3A (分支/PR 双轴代码审查 - 2步)**：锁定基准 -> 并行运行 `/code-review`（Standards + Spec 双轴）与 `/ponytail-review`（净删减行数评估）-> 闭环修复。
+  5. **SOP-3B (架构加深与重构治理 - 4步)**：阶段 1 `/improve-codebase-architecture` + `/ponytail-audit`（基于 Git 热点与 Deletion Test 生成可视化 HTML 报告）-> 阶段 2 `/grill-with-docs` + `design-it-twice` -> 阶段 3 切片规划（局部加深用垂直切片，全仓高爆炸半径机械重构用 `Expand -> Migrate -> Contract`）-> 阶段 4 TDD 平滑重构与双轴验收。
 
-## 统一交互规范：紧凑阶段进度卡片 (Phase Card)
-
-在进入任何 SOP 时，Agent 每次输出优先以如下统一格式的阶段卡片作为头部引导：
-
-```markdown
-> 📌 **[SOP 名称]** `[■■□□□] 阶段 X/Y: 阶段名称` | **关联工单**: `#ID` (若有)  
-> **当前目标**: [一句话描述当前步的核心目标]  
-> **下一步驱动**: [告知用户接下来需要确认的内容，或直接驱动下一步执行]
-```
-
-> **用户跳过与极简通道**：若用户说明“紧急修复”、“直接改”、“小调整”，或属于纯文案勘误、显式样式微调，自动降级为 **Lite Mode (2 步通道)**。
-
----
-
-## SOP-1: Bug 缺陷攻坚流 (Bug Triage & Fix SOP)
-
-**适用场景**：发现 Bug、报错、异常、崩溃、不响应、有问题、逻辑不一致等。
-
-### 阶段 1/5: 捕获与建单 (Capture & Issue)
-* **卡片标识**：`[■□□□□] 阶段 1/5: 捕获与工单建立`
-* **执行动作**：
-  1. 梳理用户描述的症状、发生环境、复现概率。
-  2. 执行 `gh issue create --title "..." --body "..."`（若无 GitHub Issue tracker 则记录在本地 `todo.md` 或 `changelog.md`）。
-  3. 在 `changelog.md` 对应版本下登记。
-* **驱动下一步**：向用户汇报生成的 Issue ID，自动推进进入阶段 2。
-
-### 阶段 2/5: 建立最小复现闭环 (Feedback Loop)
-* **卡片标识**：`[■■□□□] 阶段 2/5: 建立最小复现闭环`
-* **执行动作**（协同 `/diagnosing-bugs`）：
-  1. **严禁在没有可复现的验证环之前盲目修改业务代码**。
-  2. 构建单步执行且必定红灯（Fail）的闭环（单元测试、集成测试、curl 脚本、CLI 探针等）。
-  3. 确认验证环能精确捕获用户描述的症状。
-* **驱动下一步**：展示复现命令及红灯输出，推进进入假设阶段。
-
-### 阶段 3/5: 根因假设与探针验证 (Hypotheses & Probes)
-* **卡片标识**：`[■■■□□] 阶段 3/5: 根因假设与探针验证`
-* **执行动作**：
-  1. 提出 3~5 个可证伪假设（*若 X 是原因，则改变 Y 使 Bug 消失*）。
-  2. 使用带标签的临时探针日志或针对性断点快速定位根因。
-* **驱动下一步**：与用户对齐最可能的根因，确认后进入修复阶段。
-
-### 阶段 4/5: TDD 极简修复 (TDD & Minimal Fix)
-* **卡片标识**：`[■■■■□] 阶段 4/5: TDD 极简修复`
-* **执行动作**（协同 `/tdd` 与 `/ponytail`）：
-  1. **Red**：将复现脚本沉淀为正式回归测试用例。
-  2. **Green**：编写最少、最直接的修复代码（杜绝过度设计）。
-  3. **Refactor**：全量清理临时调试代码，确保测试全绿。
-* **驱动下一步**：汇报修复改动，准备进行预发验证流水线。
-
-### 阶段 5/5: 预发验证与工单闭环 (Staging Verify & Close)
-* **卡片标识**：`[■■■■■] 阶段 5/5: 预发验证与工单闭环`
-* **执行动作**：
-  1. **日常 Staging 验证**：部署到预发环境验证（如 `./scripts/deploy_staging.sh` 在 `localhost:3020`），**未经用户明确指令严禁调用 `./scripts/deploy.sh` 触碰生产环境**。
-  2. **研发提交与发版编译彻底解耦（铁律）**：
-     - 日常修复与提交仅做普通 Git Commit（必须携带 `#<Issue_ID>`）；
-     - **严禁修改 `pubspec.yaml` / `Cargo.toml` 自增版本号**；
-     - **严禁创建或推送 Git Tag**，确保日常 `git push` 不误触发云端发布流水线。
-  3. **反伪闭环四维证据回执**：审计真实 HTTP/MCP 接口与浏览器控制台（确保 0 运行时错误），并显式输出四态：`[代码已改] -> [单测已过] -> [真实接口/Staging 3020已测] -> [生产待授权]`。
-  4. 执行 `gh issue close <ID>` 关闭工单。
-  5. **正式发版受控**：仅且仅当用户明确指示发版时，才调用 `./scripts/publish_release.sh` 提升版本并推 Tag 触发云端打包。
-
----
-
-## ⚡ 轻量通道 (Lite Mode: 2-Step Fast Track)
-
-**判定标准**：纯文案勘误、显而易见的单个样式微调、静态常量修正，或**单文件内明确局部修复（不涉及跨前后端接缝 `UI->Route->Storage->Table` 或数据库 Schema 变更）**。
-
-* **阶段 1/2 [■□]**：登记改动点并快速定位（利用 L0~L2 切片，免除额外 `SKILL.md` 读取）。
-* **阶段 2/2 [■■]**：执行最小修改，先跑 `./scripts/verify_fast.sh` 秒级检查，再运行 `./scripts/deploy_staging.sh`（预发快速内循环验证，不改版本号、不触碰生产），完成闭环。
-
----
-
-## SOP-2: 新功能与特性演进流 (Feature Evolution SOP)
-
-**适用场景**：新需求、新功能、增加能力、交互升级等。
-
-### 阶段 1/5: 需求倾听与边界盘问 (Listen & Grilling)
-* **卡片标识**：`[■□□□□] 阶段 1/5: 需求倾听与边界盘问`
-* **执行动作**（协同 `/grill-me`）：
-  - 盘问需求边界、异常场景、状态并发、多端兼容。
-  - 明确“做什么”与“明确不做什么（Non-goals）”。
-
-### 阶段 2/5: 领域建模与 ADR 决策 (Domain Modeling & ADR)
-* **卡片标识**：`[■■□□□] 阶段 2/5: 领域建模与架构决策`
-* **执行动作**（协同 `/domain-modeling`）：
-  - 更新项目通用语言或 `CONTEXT.md`，防止术语混淆。
-  - 重大选型或架构调整时在 `docs/adr/` 沉淀 ADR。
-
-### 阶段 3/5: 方案设计与任务拆解 (Spec & Tickets)
-* **卡片标识**：`[■■■□□] 阶段 3/5: 方案设计与任务拆解`
-* **执行动作**（协同 `/to-spec` 与 `/to-tickets`）：
-  - 基于 `docs/agents/SPEC.template.md` 契约模板，在对应分类子目录 `docs/<category>/<feature_name>_solution.md`（严禁直接堆放在 `docs/` 根目录）编写技术实施方案文档（含 YAML 头部契约、数据结构、时序流、存储契约与可验证 Checklist）。
-  - 将方案拆解为独立的示踪弹（Tracer-bullet）任务工单。
-
-### 阶段 4/5: 测试驱动实施 (TDD & Implement)
-* **卡片标识**：`[■■■■□] 阶段 4/5: 测试驱动实施`
-* **执行动作**（协同 `/implement-spec`）：
-  - 遵循深模块设计（`/codebase-design`），对外接口极简，内部充分自洽。
-  - 采用测试驱动方式逐步点亮所有切片。
-
-### 阶段 5/5: 走查部署与发布交付 (Review & Deliver)
-* **卡片标识**：`[■■■■■] 阶段 5/5: 走查部署与发布交付`
-* **执行动作**：
-  - 双轴代码审查（规范度 + 契约度，协同 `/code-review`）。
-  - **研发提交与发版编译彻底解耦（铁律）**：
-    - 日常提交严禁修改版本号，严禁创建或推送 Git Tag；
-    - 预发 Staging (`./scripts/deploy_staging.sh`) 部署验证通过后更新 `changelog.md`，输出四维回执 `[代码已改] -> [单测已过] -> [真实接口/Staging 3020已测] -> [生产待授权]` 并关闭相关工单；
-    - 仅且仅当用户明确指示发版时，才调用 `./scripts/publish_release.sh` 提升版本并推 Tag 触发云端打包。
-
----
-
-## SOP-3: 架构治理与重构流 (Architecture & Refactor SOP)
-
-**适用场景**：架构重构、代码治理、Code Review、解决代码膨胀等。
-
-### 阶段 1/4: 明确审计范围与焦点 (Scope & Focus)
-* **卡片标识**：`[■□□□] 阶段 1/4: 明确审计范围与焦点`
-* 确定治理范围，排查过度设计（协同 `/ponytail-review`）与浅模块冗余。
-
-### 阶段 2/4: 重构方案与防劣化契约 (Refactor Spec)
-* **卡片标识**：`[■■□□] 阶段 2/4: 重构方案与防劣化契约`
-* 制定微提交重构方案（协同 `/request-refactor-plan`），写入 `docs/architecture/<refactor_name>_solution.md` 并建立防回归断言。
-
-### 阶段 3/4: 渐进式微小提交实施 (Step-by-step Refactor)
-* **卡片标识**：`[■■■□] 阶段 3/4: 渐进式微小提交实施`
-* 小步快跑重构，每一步确保全量测试全绿。
-
-### 阶段 4/4: 架构双轴审查与合流 (Dual-Axis Review & Merge)
-* **卡片标识**：`[■■■■] 阶段 4/4: 架构双轴审查与合流`
-* 执行规范与契约双轴审查（协同 `/code-review`），并在预发环境验证架构深度与收益。
+需要完整阶段卡片格式与细节时，请直接读取 `docs/agents/engineering_sop.md` 或 `~/Projects/my-ai-brain/sop/engineering_sop.md`。

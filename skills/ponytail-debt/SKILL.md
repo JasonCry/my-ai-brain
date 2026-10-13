@@ -1,6 +1,6 @@
 ---
 name: ponytail-debt
-description: Harvest all `ponytail:` shortcut comments across the codebase into a tracked technical debt ledger.
+description: "Harvest all `ponytail:` shortcut comments across the codebase into a tracked technical debt ledger."
 disable-model-invocation: true
 ---
 

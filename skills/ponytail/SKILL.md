@@ -1,6 +1,6 @@
 ---
 name: ponytail
-description: YAGNI minimal coding discipline: stdlib first, zero speculative abstractions, shortest working solution.
+description: "YAGNI minimal coding discipline: stdlib first, zero speculative abstractions, shortest working solution."
 ---
 
 # Ponytail

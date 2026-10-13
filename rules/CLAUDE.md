@@ -12,19 +12,21 @@ Whenever the user mentions a bug/problem, a new feature/idea, or an architectura
 ```
 
 - **Layer 1 · Model-Invoked Primitives (Always active in `<skills>`, core discipline inlined)**:
-  - `diagnosing-bugs`: Reproducible failing loop first -> falsifiable hypotheses -> minimal root-cause fix.
+  - `diagnosing-bugs`: Reproducible failing loop first -> falsifiable hypotheses across all callers -> minimal root-cause fix.
   - `tdd`: Red-Green-Refactor vertical tracer-bullet slices at public seams.
   - `codebase-design`: Deep modules (small interface hiding complex implementation at clean seams), no pass-through layers.
-  - `domain-modeling`: Challenge fuzzy terms and maintain `GLOSSARY.md` / `CONTEXT.md` and `docs/adr/` inline.
-  - `ponytail`: YAGNI, stdlib/native first, zero single-implementation abstractions.
+  - `domain-modeling`: Challenge fuzzy terms and maintain `GLOSSARY.md` / `GLOSSARY-MAP.md` (compatible with legacy `CONTEXT.md`) and `docs/adr/` inline.
+  - `ponytail`: YAGNI, codebase-reuse/stdlib/native first, zero single-implementation abstractions.
   - `code-review`: Two-axis review (Standards + Spec) via parallel subagents before delivery.
 - **Layer 2 · User-Invoked `/slash` Orchestrators (`disable-model-invocation: true`, 0 System Prompt tokens)**:
-  - Main flow: `/grill-with-docs` -> `/to-spec` -> `/to-tickets` -> `/implement` (or `/implement-spec`) -> `/retro`.
-  - On-ramps & upkeep: `/triage`, `/wayfinder`, `/improve-codebase-architecture`, `/setup-matt-pocock-skills`, `/ask-matt`.
-- **Elastic Daily SOPs**:
+  - **Resolution Rule**: When the user invokes `/<name>` or an SOP reaches that stage, read `~/.claude/skills/<name>/SKILL.md` (or `~/.gemini/config/skills/<name>/SKILL.md`) directly on demand.
+  - **Main flow (`Idea -> Ship`)**: `/grill-with-docs` (or `/prototype` detour) -> `/to-spec` -> single-session `/implement` OR multi-session `/to-tickets` -> `/implement` (or `/implement-spec`) -> `/retro`.
+  - **On-ramps & upkeep**: `/triage`, `/wayfinder` (fog-of-war decision map merging into `/to-spec`), `/improve-codebase-architecture`, `/setup-matt-pocock-skills`, `/ask-matt`.
+- **Elastic Daily SOPs (`docs/agents/engineering_sop.md`)**:
   - **Lite Mode (2-Step Fast Track)**: Text/style tweaks, static config updates, or **single-file localized fixes without cross-seam (`UI->Route->Storage->Table`) or DB schema changes** (`[■□] 1/2` -> `[■■] 2/2`).
-  - **SOP-1 (Bug Fix - 5 Steps)**: Create GitHub Issue -> failing feedback loop (`diagnosing-bugs`) -> hypothesis test -> TDD fix -> `./scripts/verify_fast.sh` + `./scripts/deploy_staging.sh` -> 4-state receipt.
-  - **SOP-2 / SOP-3 (Feature & Architecture)**: Guide or follow `/grill-with-docs` -> `/to-spec` -> `/to-tickets` -> `/implement` (or `/improve-codebase-architecture`).
+  - **SOP-1 (Bug Fix - 5 Steps)**: Create GitHub Issue -> failing feedback loop (`diagnosing-bugs`) -> hypothesis test -> TDD fix -> `./scripts/verify_fast.sh` + staging check -> 4-state receipt (optional `/retro`).
+  - **SOP-2 (Feature Evolution - 4 Steps)**: (`[■□□□] 1/4: /grill-with-docs` -> `[■■□□] 2/4: /to-spec & single/multi-session split` -> `[■■■□] 3/4: TDD /implement` -> `[■■■■] 4/4: /code-review & Staging receipt`).
+  - **SOP-3A / SOP-3B (Code Review & Architecture)**: **SOP-3A (2 Steps)** for branch/PR review (`/code-review` + `/ponytail-review`); **SOP-3B (4 Steps)** for architecture deepening (`/improve-codebase-architecture` HTML report -> `/grill-with-docs` -> vertical slices or `Expand-Contract` for wide refactors -> TDD & review).
 
 ## Index-First 3-Tier Progressive Code Navigation & Shift-Left Verification (Mandatory)
 

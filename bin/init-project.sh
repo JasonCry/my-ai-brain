@@ -48,12 +48,23 @@ block = """<!-- my-ai-brain:begin -->
   2. **L1 中观溯源**：执行 `./scripts/code_query.sh trace <API或模块名>`（检索 `docs/ARCHITECTURE_SEAMS.json`）。
   3. **L2 微观定行**：执行 `./scripts/code_query.sh outline <文件>` 或 `./scripts/code_query.sh symbol <符号>` 获取 `[LStart-LEnd]`，再用 `view_file` 按行切片读写。
   4. **Shift-Left 秒级快检**：在重型构建前优先运行 `./scripts/verify_fast.sh` 完成增量编译与静态检查。
-- **Repository Agent Docs**:
-  - **Automated Engineering SOPs**: `docs/agents/engineering_sop.md`
+- **Automated Engineering SOPs & Spec Template**:
+  - **SOP Reference**: `docs/agents/engineering_sop.md`
   - **Structured Spec Template**: `docs/agents/SPEC.template.md`
-  - **Issue Tracker**: `docs/agents/issue-tracker.md` (GitHub Issues via `gh` CLI)
-  - **Triage Labels**: `docs/agents/triage-labels.md`
-  - **Domain Context & ADRs**: `CONTEXT.md` + `docs/adr/` (see `docs/agents/domain.md`)
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs for this repo live in GitHub Issues (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five canonical triage roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout (`GLOSSARY.md` at repo root, compatible with legacy `CONTEXT.md`, and `docs/adr/`). See `docs/agents/domain.md`.
 <!-- my-ai-brain:end -->
 """
 

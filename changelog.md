@@ -5,6 +5,13 @@ All notable changes to the `my-ai-brain` project will be documented in this file
 ## [Unreleased]
 
 ### Added
+- feat(sop): 对齐 `mattpocock/skills` 官方全闭环机制与四大场景 SOP 健壮性升级 (#7)
+  - 修复 `ponytail`、`ponytail-audit`、`ponytail-debt` 的 YAML Frontmatter 解析冒号错误，确保 `ponytail` 核心原语在 Antigravity `<skills>` 正常加载。
+  - 统一领域语言文档为 `GLOSSARY.md` / `GLOSSARY-MAP.md`（向下兼容 `CONTEXT.md`），消解 `domain.md`、`domain-modeling` 与各 SOP 间的读写契约冲突。
+  - 明确 L2 `/slash` 编排器 0 常驻 Token 触发协议（按需直读 `~/.gemini/config/skills/<name>/SKILL.md`），并在 `bin/init-project.sh` 注入标准 `## Agent skills` 块彻底消除 `/setup-matt-pocock-skills` 未初始化阻断。
+  - 重构 `sop/engineering_sop.md`：SOP-1 补齐调用方全量排查与 `/retro` 复盘闭环；SOP-2 合并 `/grill-with-docs`、增补 `/wayfinder` 与 `/prototype` 支线，并引入单会话（直接实施）与多会话（`/to-tickets` 垂直切片）分流；SOP-3 拆分为 SOP-3A（PR 双轴快审）与 SOP-3B（架构加深与 `Expand-Contract` 重构治理）。
+  - 升级 `templates/scripts/verify_fast.sh` 与 `templates/hooks/pre-commit`，新增对 TypeScript/Node 与 Python 技术栈的类型/语法增量快检与版本号防呆物理门禁。
+
 - refactor(skills): 全面同步 GitHub 最新版 `mattpocock/skills` (`49dd158`) 并重构为官方「常驻原语 + 显式编排」双层架构 (#450)
   - 修复 `bin/sync-upstream.sh` 目录层级变更问题，精准拉取官方 `skills/engineering/*`（20 项，含新增的 `pr`、重构后的 `ask-matt` 与 `PHASE-BOUNDARIES.md`）及 `skills/productivity/*`（7 项），完整保留官方 `disable-model-invocation: true` 双层划分。
   - 将 26 个编排器/命令型技能（16 个官方编排器 + 10 个自有管理技能）统一标记为 `disable-model-invocation: true`（0 System Prompt 常驻开销，通过 `/slash` 显式调用），常驻 `<skills>` 仅保留 26 个模型自触发原语（约 1,437 Tokens）。
